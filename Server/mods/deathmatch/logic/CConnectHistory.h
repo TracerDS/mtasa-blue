@@ -11,36 +11,40 @@
 
 #pragma once
 
-typedef CFastHashMap<SString, struct CConnectHistoryItem> HistoryItemMap;
-typedef std::vector<long long>                            JoinTimesMap;
+#include <cstdint>
+#include <vector>
+#include <SString.h>
+#include <SharedUtil.FastHashMap.h>
+
+using HistoryItemMap = CFastHashMap<SString, struct CConnectHistoryItem>;
+using JoinTimesMap = std::vector<std::int64_t>;
 
 struct CConnectHistoryItem
 {
-    CConnectHistoryItem() : llBanEndTime(0) {}
-    long long    llBanEndTime;
+    std::int64_t llBanEndTime{0};
     JoinTimesMap joinTimes;
 };
 
 class CConnectHistory
 {
 public:
-    CConnectHistory(unsigned long ulMaxConnections, unsigned long ulSamplePeriod, unsigned long ulBanLength);
+    CConnectHistory(std::uint32_t ulMaxConnections, std::uint32_t ulSamplePeriod, std::uint32_t ulBanLength);
 
     // Note strIP, can be any string that uniquely identifies the connection
     bool                 AddConnect(const std::string& strIP);
     bool                 IsFlooding(const std::string& strIP);
     CConnectHistoryItem& GetHistoryItem(const std::string& strIP);
-    uint                 GetTotalFloodingCount();
-    SString              DebugDump(long long llTickCountAdd);
+    std::uint32_t        GetTotalFloodingCount();
+    SString              DebugDump(std::int64_t llTickCountAdd);
 
 private:
-    void      RemoveExpired();
-    long long GetModuleTickCount64();
+    void         RemoveExpired();
+    std::int64_t GetModuleTickCount64();
 
-    unsigned long  m_ulSamplePeriod;
-    unsigned long  m_ulMaxConnections;
-    unsigned long  m_ulBanLength;
+    std::uint32_t m_ulSamplePeriod;
+    std::uint32_t m_ulMaxConnections;
+    std::uint32_t m_ulBanLength;
+    std::int64_t m_llTimeLastRemoveExpired;
+    std::int64_t m_llDebugTickCountOffset;
     HistoryItemMap m_HistoryItemMap;
-    long long      m_llTimeLastRemoveExpired;
-    long long      m_llDebugTickCountOffset;
 };

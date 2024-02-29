@@ -16,12 +16,12 @@
 class CBitStream
 {
 public:
-    CBitStream(const void* pData = nullptr, uint uiDataSize = 0, bool bCopyData = false)
+    CBitStream(const void* pData = nullptr, std::uint32_t uiDataSize = 0, bool bCopyData = false) noexcept
     {
         pBitStream = g_pNetServer->AllocateNetServerBitStream(0, pData, uiDataSize, bCopyData);
     }
-    ~CBitStream() { g_pNetServer->DeallocateNetServerBitStream((NetBitStreamInterface*)pBitStream); };
-    NetBitStreamInterfaceNoVersion* operator->() { return pBitStream; }
+    ~CBitStream() noexcept { g_pNetServer->DeallocateNetServerBitStream((NetBitStreamInterface*)pBitStream); };
+    NetBitStreamInterfaceNoVersion* operator->() noexcept { return pBitStream; }
 
     NetBitStreamInterfaceNoVersion* pBitStream;
 };
@@ -30,9 +30,11 @@ public:
 class CPlayerBitStream
 {
 public:
-    CPlayerBitStream(class CPlayer* pPlayer);            //  { pBitStream = g_pNetServer->AllocateNetServerBitStream ( pPlayer->GetBitStreamVersion() ); };
-    ~CPlayerBitStream() { g_pNetServer->DeallocateNetServerBitStream((NetBitStreamInterface*)pBitStream); };
-    NetBitStreamInterface* operator->() { return pBitStream; }
+    CPlayerBitStream(class CPlayer* pPlayer) noexcept;            //  { pBitStream = g_pNetServer->AllocateNetServerBitStream ( pPlayer->GetBitStreamVersion() ); };
+    ~CPlayerBitStream() noexcept {
+        g_pNetServer->DeallocateNetServerBitStream(pBitStream);
+    }
+    NetBitStreamInterface* operator->() noexcept { return pBitStream; }
 
     NetBitStreamInterface* pBitStream;
 };

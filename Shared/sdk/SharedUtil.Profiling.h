@@ -52,14 +52,14 @@ namespace SharedUtil
 
         void Add(const char* szSection, const char* szName, eStatEventType type)
         {
-            if (m_BufferPos < m_BufferPosMaxUsing)
-            {
-                SItem& Item = m_ItemBuffer[m_BufferPos++];
-                Item.szSection = szSection;
-                Item.szName = szName;
-                Item.type = type;
-                Item.timeStamp = GetTimeUs();
-            }
+            if (m_BufferPos >= m_BufferPosMaxUsing)
+                return;
+
+            SItem& Item = m_ItemBuffer[m_BufferPos++];
+            Item.szSection = szSection;
+            Item.szName = szName;
+            Item.type = type;
+            Item.timeStamp = GetTimeUs();
         }
 
     protected:
@@ -101,19 +101,17 @@ namespace SharedUtil
     // Single result item
     struct SStatResultItem
     {
-        SStatResultItem()
-            : iCounter(0), iCounterTotal(0), iCounterTotalAcc(0), fMs(0), fMsMax(0), fMsMaxNext(0), fMsTotal(0), fMsTotalPercent(0), fMsTotalAcc(0)
-        {
-        }
-        int   iCounter;
-        int   iCounterTotal;
-        int   iCounterTotalAcc;
-        float fMs;
-        float fMsMax;
-        float fMsMaxNext;
-        float fMsTotal;
-        float fMsTotalPercent;
-        float fMsTotalAcc;
+        constexpr SStatResultItem() noexcept {}
+
+        int   iCounter{0};
+        int   iCounterTotal{0};
+        int   iCounterTotalAcc{0};
+        float fMs{0};
+        float fMsMax{0};
+        float fMsMaxNext{0};
+        float fMsTotal{0};
+        float fMsTotalPercent{0};
+        float fMsTotalAcc{0};
     };
 
     // A result section containing result items

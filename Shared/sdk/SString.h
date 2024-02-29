@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 #include <cstdarg>
-#include "SharedUtil.IntTypes.h"
 
 #ifdef WIN32
 #ifndef va_copy
@@ -26,11 +25,11 @@ class SString : public std::string
 {
 public:
     // Constructors
-    SString() : std::string() {}
+    SString() noexcept : std::string() {}
 
-    SString(const char* szText) : std::string(szText ? szText : "") {}
+    SString(const char* szText) noexcept : std::string(szText ? szText : "") {}
 
-    explicit SString(const char* szFormat, ...) : std::string()
+    explicit SString(const char* szFormat, ...) noexcept : std::string()
     {
         if (szFormat)
         {
@@ -42,9 +41,9 @@ public:
         }
     }
 
-    SString(const std::string& strText) : std::string(strText) {}
+    SString(const std::string& strText) noexcept : std::string(strText) {}
 
-    SString& Format(const char* szFormat, ...)
+    SString& Format(const char* szFormat, ...) noexcept
     {
         va_list vl;
 
@@ -60,16 +59,16 @@ public:
     void     OnInvalidParameter(const char* szFormat);
 
     // Access
-    char& operator[](int iOffset) { return std::string::operator[](iOffset); }
+    char& operator[](int iOffset) noexcept { return std::string::operator[](iOffset); }
 
     // Operators
-    SString operator+(const char* other) const { return std::string(*this) + other; }
-    SString operator+(const std::string& other) const { return std::string(*this) + other; }
-    SString operator+(const SString& other) const { return std::string(*this) + other; }
+    SString operator+(const char* other) const noexcept { return std::string(*this) + other; }
+    SString operator+(const std::string& other) const noexcept { return std::string(*this) + other; }
+    SString operator+(const SString& other) const noexcept { return std::string(*this) + other; }
 
     // Assignment
-                operator const char*() const { return c_str(); }            // Auto assign to const char* without using c_str()
-    const char* operator*() const { return c_str(); }
+                operator const char*() const noexcept { return c_str(); }            // Auto assign to const char* without using c_str()
+    const char* operator*() const noexcept { return c_str(); }
 
     // Functions
     void           Split(const SString& strDelim, std::vector<SString>& outResult, unsigned int uiMaxAmount = 0, unsigned int uiMinAmount = 0) const;
@@ -95,14 +94,14 @@ public:
     bool           BeginsWith(const SString& strOther) const;
     bool           BeginsWithI(const SString& strOther) const;
     static SString Join(const SString& strDelim, const std::vector<SString>& parts, int iFirst = 0, int iCount = 0x3fffffff);
-    void           AssignLeft(const char* szOther, uint uiMaxLength);
+    void           AssignLeft(const char* szOther, std::uint32_t uiMaxLength);
 };
 
 class SStringX : public SString
 {
 public:
-    SStringX(const char* szText) : SString(std::string(szText ? szText : "")) {}
-    SStringX(const char* szText, uint uiLength) : SString(std::string(szText ? szText : "", uiLength)) {}
+    SStringX(const char* szText) noexcept : SString(std::string(szText ? szText : "")) {}
+    SStringX(const char* szText, std::uint32_t uiLength) noexcept : SString(std::string(szText ? szText : "", uiLength)) {}
 };
 
 //
@@ -134,7 +133,7 @@ public:
     void Split(const STRING_TYPE& strInput, const STRING_TYPE& strDelim, unsigned int uiMaxAmount = 0, unsigned int uiMinAmount = 0)
     {
         // Copy string to buffer
-        uint iInputLength = strInput.length();
+        std::uint32_t iInputLength = strInput.length();
         buffer.resize(iInputLength + 1);
         memcpy(&buffer[0], &strInput[0], (iInputLength + 1) * sizeof(CHAR_TYPE));
 

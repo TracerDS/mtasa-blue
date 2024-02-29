@@ -424,7 +424,7 @@ WString WString::Join(const WString& strDelim, const std::vector<WString>& parts
     return strResult;
 }
 
-void WString::AssignLeft(const wchar_t* szOther, uint uiMaxLength)
+void WString::AssignLeft(const wchar_t* szOther, std::uint32_t uiMaxLength)
 {
     assign(WStringX(szOther).Left(uiMaxLength));
 }

@@ -29,14 +29,16 @@ public:
     void DoPulse();
     void PulseZombieCheck();
 
-    void SetScriptDebugging(class CScriptDebugging* pScriptDebugging) { m_pScriptDebugging = pScriptDebugging; };
+    void SetScriptDebugging(class CScriptDebugging* pScriptDebugging) noexcept {
+        m_pScriptDebugging = pScriptDebugging;
+    }
 
     CPlayer* Create(const NetServerPlayerID& PlayerSocket);
     void     DeleteAll();
 
-    unsigned int Count() { return static_cast<unsigned int>(m_Players.size()); }
-    unsigned int CountJoined();
-    bool         Exists(CPlayer* pPlayer);
+    std::uint32_t Count() const noexcept { return m_Players.size(); }
+    std::uint32_t CountJoined();
+    bool          Exists(CPlayer* pPlayer);
 
     CPlayer* Get(const NetServerPlayerID& PlayerSocket);
     CPlayer* Get(const char* szNick, bool bCaseSensitive = false);
@@ -44,23 +46,23 @@ public:
     std::list<CPlayer*>::const_iterator IterBegin() { return m_Players.begin(); };
     std::list<CPlayer*>::const_iterator IterEnd() { return m_Players.end(); };
 
-    size_t BroadcastOnlyJoined(const CPacket& Packet, CPlayer* pSkip = NULL);
-    size_t BroadcastDimensionOnlyJoined(const CPacket& Packet, ushort usDimension, CPlayer* pSkip = NULL);
-    size_t BroadcastOnlySubscribed(const CPacket& Packet, CElement* pElement, const char* szName, CPlayer* pSkip = NULL);
+    std::size_t BroadcastOnlyJoined(const CPacket& Packet, CPlayer* pSkip = nullptr);
+    std::size_t BroadcastDimensionOnlyJoined(const CPacket& Packet, std::uint16_t usDimension, CPlayer* pSkip = nullptr);
+    std::size_t BroadcastOnlySubscribed(const CPacket& Packet, CElement* pElement, const char* szName, CPlayer* pSkip = nullptr);
 
     static void Broadcast(const CPacket& Packet, const std::set<CPlayer*>& sendList);
     static void Broadcast(const CPacket& Packet, const std::list<CPlayer*>& sendList);
     static void Broadcast(const CPacket& Packet, const std::vector<CPlayer*>& sendList);
-    static void Broadcast(const CPacket& Packet, const std::multimap<ushort, CPlayer*>& groupMap);
+    static void Broadcast(const CPacket& Packet, const std::multimap<std::uint16_t, CPlayer*>& groupMap);
 
-    static bool IsValidPlayerModel(unsigned short model);
+    static bool IsValidPlayerModel(std::uint16_t model);
 
     void ClearElementData(CElement* pElement, const std::string& name);
     void ClearElementData(CElement* pElement);
 
     void               ResetAll();
     void               OnPlayerJoin(CPlayer* pPlayer);
-    const CMtaVersion& GetLowestConnectedPlayerVersion() { return m_strLowestConnectedPlayerVersion; }
+    const CMtaVersion& GetLowestConnectedPlayerVersion() const noexcept { return m_strLowestConnectedPlayerVersion; }
 
 private:
     void AddToList(CPlayer* pPlayer);

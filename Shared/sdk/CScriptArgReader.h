@@ -493,7 +493,7 @@ public:
         ReadNumber(color);
 
         if (!m_bError)
-            outValue = static_cast<unsigned long>(static_cast<int64_t>(color));
+            outValue = static_cast<std::uint32_t>(color);
     }
 
     //
@@ -505,7 +505,7 @@ public:
         ReadNumber(color, static_cast<lua_Number>(defaultValue));
 
         if (!m_bError)
-            outValue = static_cast<unsigned long>(static_cast<int64_t>(color));
+            outValue = static_cast<std::uint32_t>(static_cast<int64_t>(color));
     }
 
     //
@@ -730,7 +730,7 @@ public:
         // Parse each part of the string
         std::vector<SString> inValueList;
         strValue.Split(",", inValueList);
-        for (uint i = 0; i < inValueList.size(); i++)
+        for (std::uint32_t i = 0; i < inValueList.size(); i++)
         {
             T outValue;
             if (StringToEnum(inValueList[i], outValue))
@@ -912,7 +912,7 @@ public:
     void ReadLuaArguments(CLuaArguments& outValue)
     {
         outValue.ReadArguments(m_luaVM, m_iIndex);
-        for (int i = outValue.Count(); i > 0; i--)
+        for (auto i = outValue.Count(); i > 0; i--)
         {
             m_iIndex++;
         }
@@ -1003,7 +1003,7 @@ public:
                 int iArgument = lua_type(m_luaVM, -1);
                 if (iArgument == LUA_TSTRING || iArgument == LUA_TNUMBER)
                 {
-                    uint uiLength = lua_strlen(m_luaVM, -1);
+                    std::uint32_t uiLength = lua_strlen(m_luaVM, -1);
                     outList.push_back(SStringX(lua_tostring(m_luaVM, -1), uiLength));
                 }
             }
@@ -1095,7 +1095,7 @@ protected:
             SString value;
             if (valueType == LUA_TSTRING || valueType == LUA_TNUMBER)
             {
-                uint uiLength = lua_strlen(m_luaVM, -1);
+                std::uint32_t uiLength = lua_strlen(m_luaVM, -1);
                 value.assign(lua_tostring(m_luaVM, -1), uiLength);
             }
             else if (valueType == LUA_TBOOLEAN)
@@ -1183,7 +1183,7 @@ protected:
                 SStringMapValue value;
                 if (valueType == LUA_TSTRING || valueType == LUA_TNUMBER)
                 {
-                    uint uiLength = lua_strlen(m_luaVM, -1);
+                    std::uint32_t uiLength = lua_strlen(m_luaVM, -1);
                     value.assign(lua_tostring(m_luaVM, -1), uiLength);
                 }
                 else if (valueType == LUA_TBOOLEAN)

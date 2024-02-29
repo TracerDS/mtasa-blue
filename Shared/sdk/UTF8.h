@@ -23,7 +23,6 @@
  */
 #pragma once
 
-#include "SharedUtil.IntTypes.h"
 #include <string>
 
 /* Return code if invalid. (xxx_mbtowc, xxx_wctomb) */

@@ -10,9 +10,15 @@
  *****************************************************************************/
 #pragma once
 #include <chrono>
-#include "SharedUtil.IntTypes.h"
 #include "SharedUtil.Misc.h"
 #include "SString.h"
+
+#ifdef min
+    #undef min
+#endif
+#ifdef max
+    #undef max
+#endif
 
 namespace SharedUtil
 {
@@ -21,7 +27,7 @@ namespace SharedUtil
     // This keeps the counter as low as possible to delay any precision or wrap around issues.
     // Note: Return value is module dependent
     //
-    uint GetTickCount32();
+    std::uint32_t GetTickCount32();
 
     // Forbid use of GetTickCount
     #define GetTickCount GetTickCount_has_been_replaced_with_GetTickCount32
@@ -34,7 +40,7 @@ namespace SharedUtil
     // an __int64 and will effectively never wrap. This is an emulated version for XP and down.
     // Note: Wrap around issue is only defeated if the gap between calls is less than 24 days.
     //
-    long long GetTickCount64_();
+    std::int64_t GetTickCount64_();
 
     //
     // Retrieves the number of seconds that have elapsed since some arbitrary point in time.
@@ -51,58 +57,60 @@ namespace SharedUtil
     SString GetLocalTimeString(bool bDate = false, bool bMilliseconds = false);
 
     // Get time in microseconds
-    typedef ulong TIMEUS;
+    using TIMEUS = std::uint32_t;
     TIMEUS        GetTimeUs();
 
     // Get tick count cached per module
-    long long GetModuleTickCount64();
+    std::int64_t GetModuleTickCount64();
     void      UpdateModuleTickCount64();
 
     // Debugging
-    void AddTickCount(long long llTickCountAdd);
+    void AddTickCount(std::int64_t llTickCountAdd);
 
     //
     // Encapsulate a tick count value
     //
     class CTickCount
     {
-        long long m_llTicks;
+        std::int64_t m_llTicks = 0;
 
     public:
         // Constructors
-        CTickCount() : m_llTicks(0) {}
-        explicit CTickCount(long long llTicks) : m_llTicks(llTicks) {}
-        explicit CTickCount(double dTicks) : m_llTicks(static_cast<long long>(dTicks)) {}
+        CTickCount() noexcept {}
+        explicit CTickCount(std::int64_t llTicks) noexcept : m_llTicks(llTicks) {}
+        explicit CTickCount(double dTicks) noexcept : m_llTicks(static_cast<std::int64_t>(dTicks)) {}
 
         // Operators
-        CTickCount  operator+(const CTickCount& other) const { return CTickCount(m_llTicks + other.m_llTicks); }
-        CTickCount  operator-(const CTickCount& other) const { return CTickCount(m_llTicks - other.m_llTicks); }
-        CTickCount& operator+=(const CTickCount& other)
+        CTickCount  operator+(const CTickCount& other) const noexcept { return CTickCount(m_llTicks + other.m_llTicks); }
+        CTickCount  operator-(const CTickCount& other) const noexcept { return CTickCount(m_llTicks - other.m_llTicks); }
+        CTickCount& operator+=(const CTickCount& other) noexcept
         {
             m_llTicks += other.m_llTicks;
             return *this;
         }
-        CTickCount& operator-=(const CTickCount& other)
+        CTickCount& operator-=(const CTickCount& other) noexcept
         {
             m_llTicks -= other.m_llTicks;
             return *this;
         }
 
         // Comparison
-        bool operator<(const CTickCount& other) const { return m_llTicks < other.m_llTicks; }
-        bool operator>(const CTickCount& other) const { return m_llTicks > other.m_llTicks; }
-        bool operator<=(const CTickCount& other) const { return m_llTicks <= other.m_llTicks; }
-        bool operator>=(const CTickCount& other) const { return m_llTicks >= other.m_llTicks; }
-        bool operator==(const CTickCount& other) const { return m_llTicks == other.m_llTicks; }
-        bool operator!=(const CTickCount& other) const { return m_llTicks != other.m_llTicks; }
+        bool operator<(const CTickCount& other) const noexcept { return m_llTicks < other.m_llTicks; }
+        bool operator>(const CTickCount& other) const noexcept { return m_llTicks > other.m_llTicks; }
+        bool operator<=(const CTickCount& other) const noexcept { return m_llTicks <= other.m_llTicks; }
+        bool operator>=(const CTickCount& other) const noexcept { return m_llTicks >= other.m_llTicks; }
+        bool operator==(const CTickCount& other) const noexcept { return m_llTicks == other.m_llTicks; }
+        bool operator!=(const CTickCount& other) const noexcept { return m_llTicks != other.m_llTicks; }
 
         // Conversion
-        double    ToDouble() const { return static_cast<double>(m_llTicks); }
-        long long ToLongLong() const { return m_llTicks; }
-        int       ToInt() const { return static_cast<int>(m_llTicks); }
+        double       ToDouble() const noexcept { return static_cast<double>(m_llTicks); }
+        std::int64_t ToLongLong() const noexcept { return m_llTicks; }
+        int          ToInt() const noexcept { return static_cast<int>(m_llTicks); }
 
         // Static functions
-        static CTickCount Now(bool bUseModuleTickCount = false) { return CTickCount(bUseModuleTickCount ? GetModuleTickCount64() : GetTickCount64_()); }
+        static CTickCount Now(bool bUseModuleTickCount = false) noexcept {
+            return CTickCount(bUseModuleTickCount ? GetModuleTickCount64() : GetTickCount64_());
+        }
     };
 
     //
@@ -113,42 +121,44 @@ namespace SharedUtil
     {
     public:
         // MaxIncrement should be set higher than the expected tick interval between Get() calls
-        CElapsedTime()
+        CElapsedTime() noexcept
         {
-            m_llMaxIncrement = INT_MAX;
-            m_bUseModuleTickCount = false;
             Reset();
         }
 
-        void SetMaxIncrement(long lMaxIncrement, bool bUseModuleTickCount = false)
+        void SetMaxIncrement(long lMaxIncrement, bool bUseModuleTickCount = false) noexcept
         {
             m_llMaxIncrement = lMaxIncrement;
             m_bUseModuleTickCount = bUseModuleTickCount;
         }
 
-        void SetUseModuleTickCount(bool bUseModuleTickCount) { m_bUseModuleTickCount = bUseModuleTickCount; }
+        void SetUseModuleTickCount(bool bUseModuleTickCount) noexcept {
+            m_bUseModuleTickCount = bUseModuleTickCount;
+        }
 
-        void Reset()
+        void Reset() noexcept
         {
             m_llUpdateTime = DoGetTickCount();
             m_ullElapsedTime = 0;
         }
 
-        unsigned long long Get()
+        std::uint64_t Get() noexcept
         {
-            long long llTime = DoGetTickCount();
+            std::int64_t llTime = DoGetTickCount();
             m_ullElapsedTime += Clamp(0LL, llTime - m_llUpdateTime, m_llMaxIncrement);
             m_llUpdateTime = llTime;
             return m_ullElapsedTime;
         }
 
     protected:
-        long long DoGetTickCount() { return m_bUseModuleTickCount ? GetModuleTickCount64() : GetTickCount64_(); }
+        std::int64_t DoGetTickCount() const noexcept {
+            return m_bUseModuleTickCount ? GetModuleTickCount64() : GetTickCount64_();
+        }
 
-        long long          m_llUpdateTime;
-        unsigned long long m_ullElapsedTime;
-        long long          m_llMaxIncrement;
-        bool               m_bUseModuleTickCount;
+        std::int64_t  m_llUpdateTime;
+        std::uint64_t m_ullElapsedTime;
+        std::int64_t  m_llMaxIncrement = INT_MAX;
+        bool          m_bUseModuleTickCount = false;
     };
 
     //
@@ -158,39 +168,35 @@ namespace SharedUtil
     class CElapsedTimeApprox
     {
     public:
-        CElapsedTimeApprox()
+        CElapsedTimeApprox() noexcept
         {
-            m_bInitialized = false;
-            m_uiMaxIncrement = INT_MAX;
-            m_pucCounterValue = NULL;
-            m_ppIntervalCounter = NULL;
-            m_ucUpdateCount = 0;
-            m_uiElapsedTime = 0;
     #ifndef SHARED_UTIL_MANUAL_TIMER_INITIALIZATION
             StaticInitialize(this);
     #endif
         }
 
-        ~CElapsedTimeApprox()
+        ~CElapsedTimeApprox() noexcept
         {
-            if (m_ppIntervalCounter && *m_ppIntervalCounter)
-                if ((*m_ppIntervalCounter)->Release() == 0)
-                    *m_ppIntervalCounter = NULL;
+            if (!m_ppIntervalCounter || !*m_ppIntervalCounter)
+                return;
+            if ((*m_ppIntervalCounter)->Release())
+                return;
+            *m_ppIntervalCounter = nullptr;
         }
 
-        void SetMaxIncrement(uint uiMaxIncrement) { m_uiMaxIncrement = uiMaxIncrement; }
+        void SetMaxIncrement(std::uint32_t uiMaxIncrement) noexcept { m_uiMaxIncrement = uiMaxIncrement; }
 
-        void Reset()
+        void Reset() noexcept
         {
             m_ucUpdateCount = DoGetCount();
             m_uiElapsedTime = 0;
         }
 
         // This will wrap if gap between calls is over 25.5 seconds
-        uint Get()
+        std::uint32_t Get() noexcept
         {
-            uchar ucCount = DoGetCount();
-            uint  uiTimeDelta = (ucCount - m_ucUpdateCount) * 100U;
+            std::uint8_t ucCount = DoGetCount();
+            std::uint32_t  uiTimeDelta = (ucCount - m_ucUpdateCount) * 100U;
             m_ucUpdateCount = ucCount;
             m_uiElapsedTime += std::min(uiTimeDelta, m_uiMaxIncrement);
             return m_uiElapsedTime;
@@ -199,14 +205,14 @@ namespace SharedUtil
         static void StaticInitialize(CElapsedTimeApprox* pTimer);
 
     protected:
-        uchar DoGetCount() { return *m_pucCounterValue; }
+        std::uint8_t DoGetCount() const noexcept { return *m_pucCounterValue; }
 
-        bool            m_bInitialized;
-        uchar           m_ucUpdateCount;
-        uint            m_uiMaxIncrement;
-        uint            m_uiElapsedTime;
-        uchar*          m_pucCounterValue;
-        CRefCountable** m_ppIntervalCounter;
+        bool            m_bInitialized = false;
+        std::uint8_t    m_ucUpdateCount = 0;
+        std::uint32_t   m_uiMaxIncrement = INT_MAX;
+        std::uint32_t   m_uiElapsedTime = 0;
+        std::uint8_t*   m_pucCounterValue = nullptr;
+        CRefCountable** m_ppIntervalCounter = nullptr;
     };
 
     //
@@ -215,19 +221,21 @@ namespace SharedUtil
     class CElapsedTimeHD
     {
     public:
-        CElapsedTimeHD() { Reset(); }
+        CElapsedTimeHD() noexcept { Reset(); }
 
-        void Reset() { m_resetTime = DoGetTickCount(); }
+        void Reset() noexcept { m_resetTime = DoGetTickCount(); }
 
         // Returns time in milliseconds since last reset
-        double Get()
+        double Get() const noexcept
         {
             std::chrono::duration<double, std::micro> elapsedTime = DoGetTickCount() - m_resetTime;
             return elapsedTime.count() / 1000.0;
         }
 
     protected:
-        std::chrono::high_resolution_clock::time_point DoGetTickCount() { return std::chrono::high_resolution_clock::now(); }
+        std::chrono::high_resolution_clock::time_point DoGetTickCount() const noexcept {
+            return std::chrono::high_resolution_clock::now();
+        }
 
         std::chrono::high_resolution_clock::time_point m_resetTime;
     };
@@ -245,9 +253,9 @@ namespace SharedUtil
             TIMEUS      timeUs;
         };
 
-        CTimeUsMarker() { itemList.reserve(RESERVE_NUM_ITEMS); }
+        CTimeUsMarker() noexcept { itemList.reserve(RESERVE_NUM_ITEMS); }
 
-        void Set(const char* szDesc)
+        void Set(const char* szDesc) noexcept
         {
             itemList.push_back(SItem());
             SItem& item = itemList.back();
@@ -255,16 +263,16 @@ namespace SharedUtil
             item.szDesc = szDesc;
         }
 
-        void SetAndStoreString(const SString& strDesc)
+        void SetAndStoreString(const SString& strDesc) noexcept
         {
             stringStoreList.push_back(strDesc);
             Set(stringStoreList.back());
         }
 
-        SString GetString() const
+        SString GetString() const noexcept
         {
             SString strStatus;
-            for (uint i = 1; i < itemList.size(); i++)
+            for (std::uint32_t i = 1; i < itemList.size(); i++)
             {
                 const SItem& itemPrev = itemList[i - 1];
                 const SItem& item = itemList[i];

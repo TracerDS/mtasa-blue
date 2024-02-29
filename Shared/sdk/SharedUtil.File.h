@@ -11,7 +11,6 @@
 #pragma once
 
 #include <vector>
-#include "SharedUtil.IntTypes.h"
 #include "SString.h"
 #include "WString.h"
 
@@ -33,19 +32,19 @@ namespace SharedUtil
     //
     // Save to a file
     //
-    bool FileSave(const SString& strFilename, const void* pBuffer, unsigned long ulSize, bool bForce = true);
+    bool FileSave(const SString& strFilename, const void* pBuffer, std::uint32_t ulSize, bool bForce = true);
     bool FileSave(const SString& strFilename, const SString& strBuffer, bool bForce = true);
 
     //
     // Append to a file
     //
-    bool FileAppend(const SString& strFilename, const void* pBuffer, unsigned long ulSize, bool bForce = true);
+    bool FileAppend(const SString& strFilename, const void* pBuffer, std::uint32_t ulSize, bool bForce = true);
     bool FileAppend(const SString& strFilename, const SString& strBuffer, bool bForce = true);
 
     //
     // Get a file size
     //
-    uint64 FileSize(const SString& strFilename);
+    std::uint64_t FileSize(const SString& strFilename);
 
     //
     // Ensure all directories exist to the file
@@ -96,8 +95,8 @@ namespace SharedUtil
     SString GetLaunchFilename();
 
     SString GetPathDriveName(const SString& strPath);
-    uint    GetPathFreeSpaceMB(const SString& strPath);
-    SString GetDriveNameWithNotEnoughSpace(uint uiResourcesPathMinMB = 10, uint uiDataPathMinMB = 10);
+    std::uint32_t    GetPathFreeSpaceMB(const SString& strPath);
+    SString GetDriveNameWithNotEnoughSpace(std::uint32_t uiResourcesPathMinMB = 10, std::uint32_t uiDataPathMinMB = 10);
 
     WString FromUTF8(const SString& strPath);
     SString ToUTF8(const WString& strPath);

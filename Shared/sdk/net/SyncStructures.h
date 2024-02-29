@@ -35,7 +35,7 @@
 //              Data types              //
 //                                      //
 //////////////////////////////////////////
-template <unsigned int integerBits, unsigned int fractionalBits>
+template <std::uint32_t integerBits, std::uint32_t fractionalBits>
 struct SFloatSync : public ISyncStructure
 {
     bool Read(NetBitStreamInterface& bitStream)
@@ -81,7 +81,7 @@ private:
 };
 
 // Useful when we don't need all bits of integer type
-template <typename type, unsigned int bits>
+template <typename type, std::uint32_t bits>
 struct SIntegerSync : public ISyncStructure
 {
     bool Read(NetBitStreamInterface& bitStream)
@@ -111,7 +111,7 @@ struct SIntegerSync : public ISyncStructure
 //////////////////////////////////////////
 struct SFloatAsBitsSyncBase : public ISyncStructure
 {
-    SFloatAsBitsSyncBase(uint uiBits, float fMin, float fMax, bool bPreserveGreaterThanMin, bool bWrapInsteadOfClamp = false)
+    SFloatAsBitsSyncBase(std::uint32_t uiBits, float fMin, float fMax, bool bPreserveGreaterThanMin, bool bWrapInsteadOfClamp = false) noexcept
         : m_uiBits(uiBits),
           ulValueMax((1 << uiBits) - 1),
           m_fMin(fMin),
@@ -121,21 +121,20 @@ struct SFloatAsBitsSyncBase : public ISyncStructure
     {
     }
 
-    bool Read(NetBitStreamInterface& bitStream)
+    bool Read(NetBitStreamInterface& bitStream) noexcept
     {
-        unsigned long ulValue = 0;
-        if (bitStream.ReadBits(&ulValue, m_uiBits))
-        {
-            // Convert bits to position in range
-            float fAlpha = ulValue / (float)ulValueMax;
-            // Find value in range
-            data.fValue = Lerp(m_fMin, fAlpha, m_fMax);
-            return true;
-        }
-        return false;
+        auto ulValue = 0;
+        if (!bitStream.ReadBits(&ulValue, m_uiBits))
+            return false;
+
+        // Convert bits to position in range
+        float fAlpha = ulValue / (float)ulValueMax;
+        // Find value in range
+        data.fValue = Lerp(m_fMin, fAlpha, m_fMax);
+        return true;
     }
 
-    void Write(NetBitStreamInterface& bitStream) const
+    void Write(NetBitStreamInterface& bitStream) const noexcept
     {
         float fValue = data.fValue;
         if (m_bWrapInsteadOfClamp)
@@ -143,7 +142,7 @@ struct SFloatAsBitsSyncBase : public ISyncStructure
         // Find position in range
         float fAlpha = UnlerpClamped(m_fMin, fValue, m_fMax);
         // Convert to bits
-        unsigned long ulValue = Round(ulValueMax * fAlpha);
+        auto ulValue = Round(ulValueMax * fAlpha);
 
         // If required, ensure ( fValue > m_fMin ) is preserved.
         if (m_bPreserveGreaterThanMin)
@@ -159,8 +158,8 @@ struct SFloatAsBitsSyncBase : public ISyncStructure
     } data;
 
 private:
-    const uint  m_uiBits;
-    const ulong ulValueMax;
+    const std::uint32_t  m_uiBits;
+    const std::uint32_t ulValueMax;
     const float m_fMin;
     const float m_fMax;
     const bool  m_bPreserveGreaterThanMin;
@@ -168,10 +167,10 @@ private:
 };
 
 // Template version
-template <unsigned int bits>
+template <std::uint32_t bits>
 struct SFloatAsBitsSync : public SFloatAsBitsSyncBase
 {
-    SFloatAsBitsSync(float fMin, float fMax, bool bPreserveGreaterThanMin, bool bWrapInsteadOfClamp = false)
+    SFloatAsBitsSync(float fMin, float fMax, bool bPreserveGreaterThanMin, bool bWrapInsteadOfClamp = false) noexcept
         : SFloatAsBitsSyncBase(bits, fMin, fMax, bPreserveGreaterThanMin, bWrapInsteadOfClamp)
     {
     }
@@ -181,31 +180,31 @@ struct SFloatAsBitsSync : public SFloatAsBitsSyncBase
 struct SPlayerHealthSync : public SFloatAsBitsSync<8>
 {
     // 0 - 200 step 1                                 255 = ( 2^8 - 1 ) * 1
-    SPlayerHealthSync() : SFloatAsBitsSync<8>(0.f, 255.0f, true, false) {}
+    SPlayerHealthSync() noexcept : SFloatAsBitsSync<8>(0.f, 255.0f, true, false) {}
 };
 
 struct SPlayerArmorSync : public SFloatAsBitsSync<8>
 {
     // 0 - 100 step 0.5                              127.5 = ( 2^8 - 1 ) * 0.5
-    SPlayerArmorSync() : SFloatAsBitsSync<8>(0.f, 127.5f, true, false) {}
+    SPlayerArmorSync() noexcept : SFloatAsBitsSync<8>(0.f, 127.5f, true, false) {}
 };
 
 struct SVehicleHealthSync : public SFloatAsBitsSync<12>
 {
     // 0 - 2000 step 0.5                                2047.5 = ( 2^12 - 1 ) * 0.5
-    SVehicleHealthSync() : SFloatAsBitsSync<12>(0.f, 2047.5f, true, false) {}
+    SVehicleHealthSync() noexcept : SFloatAsBitsSync<12>(0.f, 2047.5f, true, false) {}
 };
 
 struct SLowPrecisionVehicleHealthSync : public SFloatAsBitsSync<8>
 {
     // 0 - 2000 step 8                                              2040 = ( 2^8 - 1 ) * 8
-    SLowPrecisionVehicleHealthSync() : SFloatAsBitsSync<8>(0.0f, 2040.0f, true, false) {}
+    SLowPrecisionVehicleHealthSync() noexcept : SFloatAsBitsSync<8>(0.0f, 2040.0f, true, false) {}
 };
 
 struct SObjectHealthSync : public SFloatAsBitsSync<11>
 {
     // 0 - 1000 step 0.5                               1023.5 = ( 2^11 - 1 ) * 0.5
-    SObjectHealthSync() : SFloatAsBitsSync<11>(0.f, 1023.5f, true, false) {}
+    SObjectHealthSync() noexcept : SFloatAsBitsSync<11>(0.f, 1023.5f, true, false) {}
 };
 
 //////////////////////////////////////////
@@ -215,51 +214,47 @@ struct SObjectHealthSync : public SFloatAsBitsSync<11>
 //////////////////////////////////////////
 struct SPositionSync : public ISyncStructure
 {
-    SPositionSync(bool bUseFloats = false) : m_bUseFloats(bUseFloats) {}
+    SPositionSync(bool bUseFloats = false) noexcept : m_bUseFloats(bUseFloats) {}
 
-    bool Read(NetBitStreamInterface& bitStream)
+    bool Read(NetBitStreamInterface& bitStream) noexcept
     {
         if (m_bUseFloats)
         {
-            return bitStream.Read(data.vecPosition.fX) && bitStream.Read(data.vecPosition.fY) && bitStream.Read(data.vecPosition.fZ) &&
-                   data.vecPosition.fX > -SYNC_POSITION_LIMIT && data.vecPosition.fX < SYNC_POSITION_LIMIT && data.vecPosition.fY > -SYNC_POSITION_LIMIT &&
-                   data.vecPosition.fY < SYNC_POSITION_LIMIT && data.vecPosition.fZ > -SYNC_POSITION_LIMIT && data.vecPosition.fZ < SYNC_POSITION_LIMIT;
-        }
-        else
-        {
-            SFloatSync<14, 10> x, y;
-
-            if (bitStream.Read(&x) && bitStream.Read(&y) && bitStream.Read(data.vecPosition.fZ))
-            {
-                data.vecPosition.fX = x.data.fValue;
-                data.vecPosition.fY = y.data.fValue;
-                if (x.data.fValue > -SYNC_POSITION_LIMIT && x.data.fValue < SYNC_POSITION_LIMIT && y.data.fValue > -SYNC_POSITION_LIMIT &&
-                    y.data.fValue < SYNC_POSITION_LIMIT && data.vecPosition.fZ > -SYNC_POSITION_LIMIT && data.vecPosition.fZ < SYNC_POSITION_LIMIT)
-                    return true;
-            }
+            return bitStream.Read(data.vecPosition.fX) && bitStream.Read(data.vecPosition.fY) &&
+                bitStream.Read(data.vecPosition.fZ) &&
+                data.vecPosition.fX > -SYNC_POSITION_LIMIT && data.vecPosition.fX < SYNC_POSITION_LIMIT &&
+                data.vecPosition.fY > -SYNC_POSITION_LIMIT && data.vecPosition.fY < SYNC_POSITION_LIMIT &&
+                data.vecPosition.fZ > -SYNC_POSITION_LIMIT && data.vecPosition.fZ < SYNC_POSITION_LIMIT;
         }
 
-        return false;
+        SFloatSync<14, 10> x, y;
+
+        if (!bitStream.Read(&x) || !bitStream.Read(&y) || !bitStream.Read(data.vecPosition.fZ))
+            return false;
+
+        data.vecPosition.fX = x.data.fValue;
+        data.vecPosition.fY = y.data.fValue;
+        return x.data.fValue > -SYNC_POSITION_LIMIT && x.data.fValue < SYNC_POSITION_LIMIT && y.data.fValue > -SYNC_POSITION_LIMIT &&
+            y.data.fValue < SYNC_POSITION_LIMIT && data.vecPosition.fZ > -SYNC_POSITION_LIMIT && data.vecPosition.fZ < SYNC_POSITION_LIMIT;
     }
 
-    void Write(NetBitStreamInterface& bitStream) const
+    void Write(NetBitStreamInterface& bitStream) const noexcept 
     {
         if (m_bUseFloats)
         {
             bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fX, SYNC_POSITION_LIMIT - 1));
             bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fY, SYNC_POSITION_LIMIT - 1));
             bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fZ, SYNC_POSITION_LIMIT - 1));
+            return;
         }
-        else
-        {
-            SFloatSync<14, 10> x, y;
-            x.data.fValue = data.vecPosition.fX;
-            y.data.fValue = data.vecPosition.fY;
 
-            bitStream.Write(&x);
-            bitStream.Write(&y);
-            bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fZ, SYNC_POSITION_LIMIT - 1));
-        }
+        SFloatSync<14, 10> x, y;
+        x.data.fValue = data.vecPosition.fX;
+        y.data.fValue = data.vecPosition.fY;
+
+        bitStream.Write(&x);
+        bitStream.Write(&y);
+        bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fZ, SYNC_POSITION_LIMIT - 1));
     }
 
     struct
@@ -273,48 +268,40 @@ private:
 
 struct SPosition2DSync : public ISyncStructure
 {
-    SPosition2DSync(bool bUseFloats = false) : m_bUseFloats(bUseFloats) {}
+    SPosition2DSync(bool bUseFloats = false) noexcept : m_bUseFloats(bUseFloats) {}
 
-    bool Read(NetBitStreamInterface& bitStream)
+    bool Read(NetBitStreamInterface& bitStream) noexcept 
     {
         if (m_bUseFloats)
         {
             return bitStream.Read(data.vecPosition.fX) && bitStream.Read(data.vecPosition.fY) && data.vecPosition.fX > -SYNC_POSITION_LIMIT &&
                    data.vecPosition.fX < SYNC_POSITION_LIMIT && data.vecPosition.fY > -SYNC_POSITION_LIMIT && data.vecPosition.fY < SYNC_POSITION_LIMIT;
         }
-        else
-        {
-            SFloatSync<14, 10> x, y;
+        SFloatSync<14, 10> x, y;
 
-            if (bitStream.Read(&x) && bitStream.Read(&y))
-            {
-                data.vecPosition.fX = x.data.fValue;
-                data.vecPosition.fY = y.data.fValue;
-                if (x.data.fValue > -SYNC_POSITION_LIMIT && x.data.fValue < SYNC_POSITION_LIMIT && y.data.fValue > -SYNC_POSITION_LIMIT &&
-                    y.data.fValue < SYNC_POSITION_LIMIT)
-                    return true;
-            }
-        }
+        if (!bitStream.Read(&x) || !bitStream.Read(&y))
+            return false;
 
-        return false;
+        data.vecPosition.fX = x.data.fValue;
+        data.vecPosition.fY = y.data.fValue;
+        return x.data.fValue > -SYNC_POSITION_LIMIT && x.data.fValue < SYNC_POSITION_LIMIT &&
+            y.data.fValue > -SYNC_POSITION_LIMIT && y.data.fValue < SYNC_POSITION_LIMIT;
     }
 
-    void Write(NetBitStreamInterface& bitStream) const
+    void Write(NetBitStreamInterface& bitStream) const noexcept 
     {
         if (m_bUseFloats)
         {
             bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fX, SYNC_POSITION_LIMIT - 1));
             bitStream.Write(Clamp(-SYNC_POSITION_LIMIT + 1, data.vecPosition.fY, SYNC_POSITION_LIMIT - 1));
+            return;
         }
-        else
-        {
-            SFloatSync<14, 10> x, y;
-            x.data.fValue = data.vecPosition.fX;
-            y.data.fValue = data.vecPosition.fY;
+        SFloatSync<14, 10> x, y;
+        x.data.fValue = data.vecPosition.fX;
+        y.data.fValue = data.vecPosition.fY;
 
-            bitStream.Write(&x);
-            bitStream.Write(&y);
-        }
+        bitStream.Write(&x);
+        bitStream.Write(&y);
     }
 
     struct
@@ -331,11 +318,11 @@ private:
 // - Write Z bound to [-110, 1938], with a max error of 1 unit.
 struct SLowPrecisionPositionSync : public ISyncStructure
 {
-    bool Read(NetBitStreamInterface& bitStream)
+    bool Read(NetBitStreamInterface& bitStream) noexcept 
     {
-        unsigned short usX;
-        unsigned short usY;
-        unsigned short usZ;
+        std::uint16_t usX;
+        std::uint16_t usY;
+        std::uint16_t usZ;
 
         if (!bitStream.Read(usX) || !bitStream.Read(usY) || !bitStream.ReadBits(reinterpret_cast<char*>(&usZ), 11))
             return false;
@@ -351,9 +338,9 @@ struct SLowPrecisionPositionSync : public ISyncStructure
         float fY = SharedUtil::Clamp(-8192.0f, data.vecPosition.fY, 8192.0f);
         float fZ = SharedUtil::Clamp(-110.0f, data.vecPosition.fZ, 2048.0f - 110.0f);
 
-        unsigned short usX = static_cast<unsigned short>(((fX + 8192.0f) / 16384.0f) * 65535.0f);
-        unsigned short usY = static_cast<unsigned short>(((fY + 8192.0f) / 16384.0f) * 65535.0f);
-        unsigned short usZ = static_cast<unsigned short>(fZ + 110.0f);
+        std::uint16_t usX = static_cast<std::uint16_t>(((fX + 8192.0f) / 16384.0f) * 65535.0f);
+        std::uint16_t usY = static_cast<std::uint16_t>(((fY + 8192.0f) / 16384.0f) * 65535.0f);
+        std::uint16_t usZ = static_cast<std::uint16_t>(fZ + 110.0f);
 
         bitStream.Write(usX);
         bitStream.Write(usY);
@@ -385,9 +372,9 @@ struct SRotationDegreesSync : public ISyncStructure
         }
         else
         {
-            unsigned short usRx;
-            unsigned short usRy;
-            unsigned short usRz;
+            std::uint16_t usRx;
+            std::uint16_t usRy;
+            std::uint16_t usRz;
 
             if (bitStream.Read(usRx) && bitStream.Read(usRy) && bitStream.Read(usRz))
             {
@@ -411,9 +398,9 @@ struct SRotationDegreesSync : public ISyncStructure
         }
         else
         {
-            unsigned short usRx = static_cast<unsigned short>(data.vecRotation.fX * (65536 / 360.f));
-            unsigned short usRy = static_cast<unsigned short>(data.vecRotation.fY * (65536 / 360.f));
-            unsigned short usRz = static_cast<unsigned short>(data.vecRotation.fZ * (65536 / 360.f));
+            std::uint16_t usRx = static_cast<std::uint16_t>(data.vecRotation.fX * (65536 / 360.f));
+            std::uint16_t usRy = static_cast<std::uint16_t>(data.vecRotation.fY * (65536 / 360.f));
+            std::uint16_t usRz = static_cast<std::uint16_t>(data.vecRotation.fZ * (65536 / 360.f));
             bitStream.Write(usRx);
             bitStream.Write(usRy);
             bitStream.Write(usRz);
@@ -441,9 +428,9 @@ struct SRotationRadiansSync : public ISyncStructure
         }
         else
         {
-            unsigned short usRx;
-            unsigned short usRy;
-            unsigned short usRz;
+            std::uint16_t usRx;
+            std::uint16_t usRy;
+            std::uint16_t usRz;
 
             if (bitStream.Read(usRx) && bitStream.Read(usRy) && bitStream.Read(usRz))
             {
@@ -467,9 +454,9 @@ struct SRotationRadiansSync : public ISyncStructure
         }
         else
         {
-            unsigned short usRx = static_cast<unsigned short>(data.vecRotation.fX * (65536 / 6.283185307f));
-            unsigned short usRy = static_cast<unsigned short>(data.vecRotation.fY * (65536 / 6.283185307f));
-            unsigned short usRz = static_cast<unsigned short>(data.vecRotation.fZ * (65536 / 6.283185307f));
+            std::uint16_t usRx = static_cast<std::uint16_t>(data.vecRotation.fX * (65536 / 6.283185307f));
+            std::uint16_t usRy = static_cast<std::uint16_t>(data.vecRotation.fY * (65536 / 6.283185307f));
+            std::uint16_t usRz = static_cast<std::uint16_t>(data.vecRotation.fZ * (65536 / 6.283185307f));
             bitStream.Write(usRx);
             bitStream.Write(usRy);
             bitStream.Write(usRz);
@@ -687,7 +674,7 @@ struct SVehiclePuresyncFlags : public ISyncStructure
     } data;
 };
 
-enum class eVehicleAimDirection : unsigned char
+enum class eVehicleAimDirection : std::uint8_t
 {
     FORWARDS = 0,
     LEFT,
@@ -840,7 +827,7 @@ struct SUnoccupiedVehicleSync : public ISyncStructure
         ElementID trailer;
 
         ElementID     vehicleID;
-        unsigned char ucTimeContext;
+        std::uint8_t ucTimeContext;
     } data;
 };
 
@@ -884,7 +871,7 @@ struct SFullKeysyncSync : public ISyncStructure
         {
             if (bitStream.ReadBit())
             {
-                unsigned char ucButtonSquare;
+                std::uint8_t ucButtonSquare;
                 bitStream.Read(ucButtonSquare);
                 data.ucButtonSquare = ucButtonSquare;
             }
@@ -893,7 +880,7 @@ struct SFullKeysyncSync : public ISyncStructure
 
             if (bitStream.ReadBit())
             {
-                unsigned char ucButtonCross;
+                std::uint8_t ucButtonCross;
                 bitStream.Read(ucButtonCross);
                 data.ucButtonCross = ucButtonCross;
             }
@@ -949,8 +936,8 @@ struct SFullKeysyncSync : public ISyncStructure
         bool          bButtonTriangle : 1;
         bool          bShockButtonL : 1;
         bool          bPedWalk : 1;
-        unsigned char ucButtonSquare;
-        unsigned char ucButtonCross;
+        std::uint8_t ucButtonSquare;
+        std::uint8_t ucButtonCross;
         short         sLeftStickX;
         short         sLeftStickY;
     } data;
@@ -973,7 +960,7 @@ struct SSmallKeysyncSync : public ISyncStructure
         {
             if (bitStream.ReadBit())
             {
-                unsigned char ucButtonSquare;
+                std::uint8_t ucButtonSquare;
                 bitStream.Read(ucButtonSquare);
                 data.ucButtonSquare = ucButtonSquare;
             }
@@ -982,7 +969,7 @@ struct SSmallKeysyncSync : public ISyncStructure
 
             if (bitStream.ReadBit())
             {
-                unsigned char ucButtonCross;
+                std::uint8_t ucButtonCross;
                 bitStream.Read(ucButtonCross);
                 data.ucButtonCross = ucButtonCross;
             }
@@ -1038,8 +1025,8 @@ struct SSmallKeysyncSync : public ISyncStructure
         bool          bButtonTriangle : 1;
         bool          bShockButtonL : 1;
         bool          bPedWalk : 1;
-        unsigned char ucButtonCross;
-        unsigned char ucButtonSquare;
+        std::uint8_t ucButtonCross;
+        std::uint8_t ucButtonSquare;
         short         sLeftStickX;
         short         sLeftStickY;
     } data;
@@ -1061,7 +1048,7 @@ struct SVehicleTurretSync : public ISyncStructure
     }
     void Write(NetBitStreamInterface& bitStream) const
     {
-        // Convert to shorts to save 4 bytes (multiply for precision on how many rounds can fit in a ushort)
+        // Convert to shorts to save 4 bytes (multiply for precision on how many rounds can fit in a std::uint16_t)
         short sHorizontal = static_cast<short>(data.fTurretX * (32767.0f / PI)), sVertical = static_cast<short>(data.fTurretY * (32767.0f / PI));
 
         bitStream.Write(sHorizontal);
@@ -1147,7 +1134,7 @@ struct SWeaponSlotSync : public ISyncStructure
 
     struct
     {
-        unsigned int uiSlot : 4;
+        std::uint32_t uiSlot : 4;
     } data;
 };
 
@@ -1163,7 +1150,7 @@ struct SWeaponTypeSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucWeaponType : 6;
+        std::uint8_t ucWeaponType : 6;
     } data;
 };
 
@@ -1174,12 +1161,12 @@ struct IAmmoInClipSync : public virtual ISyncStructure
     void  operator delete(void*) {}
 #endif
 
-    virtual unsigned short GetAmmoInClip() const = 0;
+    virtual std::uint16_t GetAmmoInClip() const = 0;
 };
 
 struct SWeaponAmmoSync : public ISyncStructure
 {
-    SWeaponAmmoSync(unsigned char ucWeaponType, bool bSyncTotalAmmo = true, bool bSyncAmmoInClip = true)
+    SWeaponAmmoSync(std::uint8_t ucWeaponType, bool bSyncTotalAmmo = true, bool bSyncAmmoInClip = true)
         : m_ucWeaponType(ucWeaponType), m_bSyncTotalAmmo(bSyncTotalAmmo), m_bSyncAmmoInClip(bSyncAmmoInClip)
     {
     }
@@ -1210,12 +1197,12 @@ struct SWeaponAmmoSync : public ISyncStructure
 
     struct
     {
-        unsigned short usTotalAmmo;
-        unsigned short usAmmoInClip;
+        std::uint16_t usTotalAmmo;
+        std::uint16_t usAmmoInClip;
     } data;
 
 private:
-    unsigned char m_ucWeaponType;
+    std::uint8_t m_ucWeaponType;
     bool          m_bSyncTotalAmmo;
     bool          m_bSyncAmmoInClip;
 };
@@ -1313,7 +1300,7 @@ struct SBodypartSync : public ISyncStructure
     {
         struct
         {
-            unsigned int uiBodypart : 3;
+            std::uint32_t uiBodypart : 3;
         } privateData;
 
         // Bodyparts go from 3 to 9, so substracting 3 from the value
@@ -1324,7 +1311,7 @@ struct SBodypartSync : public ISyncStructure
 
     struct
     {
-        unsigned int uiBodypart;
+        std::uint32_t uiBodypart;
     } data;
 };
 
@@ -1333,20 +1320,20 @@ struct SBodypartSync : public ISyncStructure
 //           Vehicle damage             //
 //                                      //
 //////////////////////////////////////////
-template <unsigned int MAXELEMENTS, unsigned int NUMBITS>
+template <std::uint32_t MAXELEMENTS, std::uint32_t NUMBITS>
 struct SVehiclePartStateSync : public ISyncStructure
 {
     SVehiclePartStateSync(bool bDeltaSync = true) : m_bDeltaSync(bDeltaSync) {}
 
     bool Read(NetBitStreamInterface& bitStream)
     {
-        for (unsigned int i = 0; i < MAXELEMENTS; ++i)
+        for (std::uint32_t i = 0; i < MAXELEMENTS; ++i)
         {
             if (!m_bDeltaSync || (data.bChanged[i] = bitStream.ReadBit()) == true)
             {
                 struct
                 {
-                    unsigned int uiState : NUMBITS;
+                    std::uint32_t uiState : NUMBITS;
                 } privateData;
                 if (!bitStream.ReadBits(reinterpret_cast<char*>(&privateData), NUMBITS))
                     return false;
@@ -1362,13 +1349,13 @@ struct SVehiclePartStateSync : public ISyncStructure
 
     void Write(NetBitStreamInterface& bitStream) const
     {
-        for (unsigned int i = 0; i < MAXELEMENTS; ++i)
+        for (std::uint32_t i = 0; i < MAXELEMENTS; ++i)
         {
             if (!m_bDeltaSync || data.bChanged[i])
             {
                 struct
                 {
-                    unsigned int uiState : NUMBITS;
+                    std::uint32_t uiState : NUMBITS;
                 } privateData;
                 privateData.uiState = data.ucStates[i];
 
@@ -1384,7 +1371,7 @@ struct SVehiclePartStateSync : public ISyncStructure
     struct
     {
         SFixedArray<bool, MAXELEMENTS>          bChanged;
-        SFixedArray<unsigned char, MAXELEMENTS> ucStates;
+        SFixedArray<std::uint8_t, MAXELEMENTS> ucStates;
     } data;
 
 private:
@@ -1489,10 +1476,10 @@ struct SVehicleDamageSync : public ISyncStructure
         SFixedArray<bool, MAX_PANELS> bPanelStatesChanged;
         SFixedArray<bool, MAX_LIGHTS> bLightStatesChanged;
 
-        SFixedArray<unsigned char, MAX_DOORS>  ucDoorStates;
-        SFixedArray<unsigned char, MAX_WHEELS> ucWheelStates;
-        SFixedArray<unsigned char, MAX_PANELS> ucPanelStates;
-        SFixedArray<unsigned char, MAX_LIGHTS> ucLightStates;
+        SFixedArray<std::uint8_t, MAX_DOORS>  ucDoorStates;
+        SFixedArray<std::uint8_t, MAX_WHEELS> ucWheelStates;
+        SFixedArray<std::uint8_t, MAX_PANELS> ucPanelStates;
+        SFixedArray<std::uint8_t, MAX_LIGHTS> ucLightStates;
     } data;
 
 private:
@@ -1508,7 +1495,7 @@ private:
 //           Vehicle damage v2          //
 //                                      //
 //////////////////////////////////////////
-template <unsigned int MAXELEMENTS, unsigned int NUMBITS>
+template <std::uint32_t MAXELEMENTS, std::uint32_t NUMBITS>
 struct SVehiclePartStateSyncMethodeB : public ISyncStructure
 {
     bool Read(NetBitStreamInterface& bitStream)
@@ -1519,11 +1506,11 @@ struct SVehiclePartStateSyncMethodeB : public ISyncStructure
 
         if (bIsNonZero)
         {
-            for (unsigned int i = 0; i < MAXELEMENTS; ++i)
+            for (std::uint32_t i = 0; i < MAXELEMENTS; ++i)
             {
                 struct
                 {
-                    unsigned int uiState : NUMBITS;
+                    std::uint32_t uiState : NUMBITS;
                 } privateData;
 
                 if (!bitStream.ReadBits(reinterpret_cast<char*>(&privateData), NUMBITS))
@@ -1543,7 +1530,7 @@ struct SVehiclePartStateSyncMethodeB : public ISyncStructure
     {
         // Check if all zeros
         bool bIsNonZero = false;
-        for (unsigned int i = 0; i < MAXELEMENTS; ++i)
+        for (std::uint32_t i = 0; i < MAXELEMENTS; ++i)
         {
             bIsNonZero |= (data.ucStates[i] != 0);
         }
@@ -1551,11 +1538,11 @@ struct SVehiclePartStateSyncMethodeB : public ISyncStructure
 
         if (bIsNonZero)
         {
-            for (unsigned int i = 0; i < MAXELEMENTS; ++i)
+            for (std::uint32_t i = 0; i < MAXELEMENTS; ++i)
             {
                 struct
                 {
-                    unsigned int uiState : NUMBITS;
+                    std::uint32_t uiState : NUMBITS;
                 } privateData;
 
                 privateData.uiState = data.ucStates[i];
@@ -1567,7 +1554,7 @@ struct SVehiclePartStateSyncMethodeB : public ISyncStructure
 
     struct
     {
-        SFixedArray<unsigned char, MAXELEMENTS> ucStates;
+        SFixedArray<std::uint8_t, MAXELEMENTS> ucStates;
     } data;
 };
 
@@ -1701,13 +1688,13 @@ struct SVehicleHandlingSync : public ISyncStructure
         float         fTurnMass;                     // +12
         float         fDragCoeff;                    // +16
         CVector       vecCenterOfMass;               // +20
-        unsigned char ucPercentSubmerged;            // +32     (unsigned int - sync changes)
+        std::uint8_t ucPercentSubmerged;            // +32     (std::uint32_t - sync changes)
 
         float fTractionMultiplier;            // +40
 
-        unsigned char ucDriveType;                // +112
-        unsigned char ucEngineType;               // +113
-        unsigned char ucNumberOfGears;            // +114
+        std::uint8_t ucDriveType;                // +112
+        std::uint8_t ucEngineType;               // +113
+        std::uint8_t ucNumberOfGears;            // +114
 
         float fEngineAcceleration;            // +120     (value in handling.cfg * 0x86A950)
         float fEngineInertia;                 // +124
@@ -1731,14 +1718,14 @@ struct SVehicleHandlingSync : public ISyncStructure
 
         float fCollisionDamageMultiplier;            // +200
 
-        unsigned int uiModelFlags;                   // +204
-        unsigned int uiHandlingFlags;                // +208
+        std::uint32_t uiModelFlags;                   // +204
+        std::uint32_t uiHandlingFlags;                // +208
         float        fSeatOffsetDistance;            // +212
-        // unsigned int    uiMonetary;                     // +216
+        // std::uint32_t    uiMonetary;                     // +216
 
-        // unsigned char   ucHeadLight;                    // +220
-        // unsigned char   ucTailLight;                    // +221
-        unsigned char ucAnimGroup;            // +222
+        // std::uint8_t   ucHeadLight;                    // +220
+        // std::uint8_t   ucTailLight;                    // +221
+        std::uint8_t ucAnimGroup;            // +222
     } data;
 };
 
@@ -1790,8 +1777,8 @@ struct SVehicleSirenAddSync : public ISyncStructure
         bool          m_bUseRandomiser;
         bool          m_bEnableSilent;
         bool          m_bOverrideSirens;
-        unsigned char m_ucSirenType;
-        unsigned char m_ucSirenCount;
+        std::uint8_t m_ucSirenType;
+        std::uint8_t m_ucSirenCount;
     } data;
 };
 
@@ -1857,8 +1844,8 @@ struct SVehicleSirenSync : public ISyncStructure
         bool          m_bOverrideSirens;
         CVector       m_vecSirenPositions;
         SColor        m_colSirenColour;
-        uint          m_dwSirenMinAlpha;
-        unsigned char m_ucSirenID;
+        std::uint32_t          m_dwSirenMinAlpha;
+        std::uint8_t m_ucSirenID;
     } data;
 };
 
@@ -1883,7 +1870,7 @@ struct SExplosionTypeSync : public ISyncStructure
 
     struct
     {
-        unsigned int uiType : 4;
+        std::uint32_t uiType : 4;
     } data;
 };
 
@@ -2122,7 +2109,7 @@ struct SQuitReasonSync : public ISyncStructure
 
     struct
     {
-        unsigned int uiQuitReason : 3;
+        std::uint32_t uiQuitReason : 3;
     } data;
 };
 
@@ -2152,13 +2139,13 @@ struct SEntityAlphaSync : public ISyncStructure
     }
     void Write(NetBitStreamInterface& bitStream) const
     {
-        unsigned char ucAlpha = 255 - data.ucAlpha;
+        std::uint8_t ucAlpha = 255 - data.ucAlpha;
         bitStream.WriteCompressed(ucAlpha);
     }
 
     struct
     {
-        unsigned char ucAlpha;
+        std::uint8_t ucAlpha;
     } data;
 };
 
@@ -2179,7 +2166,7 @@ struct SMarkerTypeSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucType : 3;
+        std::uint8_t ucType : 3;
     } data;
 };
 
@@ -2200,7 +2187,7 @@ struct SPickupTypeSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucType : 3;
+        std::uint8_t ucType : 3;
     } data;
 };
 
@@ -2221,7 +2208,7 @@ struct SColshapeTypeSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucType : 3;
+        std::uint8_t ucType : 3;
     } data;
 };
 
@@ -2250,10 +2237,10 @@ struct SColorSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucR;
-        unsigned char ucG;
-        unsigned char ucB;
-        unsigned char ucA;
+        std::uint8_t ucR;
+        std::uint8_t ucG;
+        std::uint8_t ucB;
+        std::uint8_t ucA;
     } data;
 };
 
@@ -2274,7 +2261,7 @@ struct SOccupiedSeatSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucSeat : 4;
+        std::uint8_t ucSeat : 4;
     } data;
 };
 
@@ -2295,7 +2282,7 @@ struct SPaintjobSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucPaintjob : 2;
+        std::uint8_t ucPaintjob : 2;
     } data;
 };
 
@@ -2316,7 +2303,7 @@ struct SOverrideLightsSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucOverride : 2;
+        std::uint8_t ucOverride : 2;
     } data;
 };
 
@@ -2337,7 +2324,7 @@ struct SLuaTypeSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucType : 4;
+        std::uint8_t ucType : 4;
     } data;
 };
 
@@ -2358,7 +2345,7 @@ struct SMouseButtonSync : public ISyncStructure
 
     struct
     {
-        unsigned char ucButton : 3;
+        std::uint8_t ucButton : 3;
     } data;
 };
 
@@ -2375,7 +2362,7 @@ struct SHeatHazeSync : public ISyncStructure
     // To SHeatHazeSettings
     operator SHeatHazeSettings() const { return data.settings; }
 
-    template <unsigned int bits, typename T>
+    template <std::uint32_t bits, typename T>
     bool ReadRange(NetBitStreamInterface& bitStream, T& outvalue, const T low, const T hi)
     {
         T temp;
@@ -2385,7 +2372,7 @@ struct SHeatHazeSync : public ISyncStructure
         return true;
     }
 
-    template <unsigned int bits, typename T>
+    template <std::uint32_t bits, typename T>
     void WriteRange(NetBitStreamInterface& bitStream, const T value, const T low, const T hi) const
     {
         T temp = Clamp<T>(low, value, hi) - low;
@@ -2395,23 +2382,23 @@ struct SHeatHazeSync : public ISyncStructure
     bool Read(NetBitStreamInterface& bitStream)
     {
         return bitStream.Read(data.settings.ucIntensity) && bitStream.Read(data.settings.ucRandomShift) &&
-               ReadRange<10, ushort>(bitStream, data.settings.usSpeedMin, 0, 1000) && ReadRange<10, ushort>(bitStream, data.settings.usSpeedMax, 0, 1000) &&
+               ReadRange<10, std::uint16_t>(bitStream, data.settings.usSpeedMin, 0, 1000) && ReadRange<10, std::uint16_t>(bitStream, data.settings.usSpeedMax, 0, 1000) &&
                ReadRange<11, short>(bitStream, data.settings.sScanSizeX, -1000, 1000) &&
                ReadRange<11, short>(bitStream, data.settings.sScanSizeY, -1000, 1000) &&
-               ReadRange<10, ushort>(bitStream, data.settings.usRenderSizeX, 0, 1000) &&
-               ReadRange<10, ushort>(bitStream, data.settings.usRenderSizeY, 0, 1000) && bitStream.ReadBit(data.settings.bInsideBuilding);
+               ReadRange<10, std::uint16_t>(bitStream, data.settings.usRenderSizeX, 0, 1000) &&
+               ReadRange<10, std::uint16_t>(bitStream, data.settings.usRenderSizeY, 0, 1000) && bitStream.ReadBit(data.settings.bInsideBuilding);
     }
 
     void Write(NetBitStreamInterface& bitStream) const
     {
         bitStream.Write(data.settings.ucIntensity);
         bitStream.Write(data.settings.ucRandomShift);
-        WriteRange<10, ushort>(bitStream, data.settings.usSpeedMin, 0, 1000);
-        WriteRange<10, ushort>(bitStream, data.settings.usSpeedMax, 0, 1000);
+        WriteRange<10, std::uint16_t>(bitStream, data.settings.usSpeedMin, 0, 1000);
+        WriteRange<10, std::uint16_t>(bitStream, data.settings.usSpeedMax, 0, 1000);
         WriteRange<11, short>(bitStream, data.settings.sScanSizeX, -1000, 1000);
         WriteRange<11, short>(bitStream, data.settings.sScanSizeY, -1000, 1000);
-        WriteRange<10, ushort>(bitStream, data.settings.usRenderSizeX, 0, 1000);
-        WriteRange<10, ushort>(bitStream, data.settings.usRenderSizeY, 0, 1000);
+        WriteRange<10, std::uint16_t>(bitStream, data.settings.usRenderSizeX, 0, 1000);
+        WriteRange<10, std::uint16_t>(bitStream, data.settings.usRenderSizeY, 0, 1000);
         bitStream.WriteBit(data.settings.bInsideBuilding);
     }
 

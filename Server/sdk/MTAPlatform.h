@@ -15,7 +15,7 @@ extern "C" bool g_bSilent;
 extern "C" bool g_bNoTopBar;
 
 /** Operating system identifiers **/
-#if defined(WIN32)
+#if defined(_WIN32)
     #ifdef _WIN64
         #define MTA_OS_STRING   "Windows x64"
     #elif defined(_M_ARM64)
@@ -53,11 +53,11 @@ extern "C" bool g_bNoTopBar;
     #define MTA_LIB_SUFFIX
 #endif
 
-#ifdef WIN32
-// Define types
-typedef int socklen_t;
+#ifdef _WIN32
+    // Define types
+    using socklen_t = int;
 
-// Define keys
+    // Define keys
     #define KEY_BACKSPACE 0x08
     #define KEY_EXTENDED  0xE0
     #define KEY_LEFT      0x4B

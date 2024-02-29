@@ -11,7 +11,6 @@
 #pragma once
 
 #include <vector>
-#include "SharedUtil.IntTypes.h"
 #include "SharedUtil.Misc.h"
 #include "SharedUtil.File.h"
 #include "SString.h"
@@ -49,36 +48,38 @@ namespace SharedUtil
     class CBuffer : protected std::vector<char>
     {
     public:
-        CBuffer() {}
-        CBuffer(const void* pData, uint uiSize) { AddBytes(pData, uiSize, 0); }
+        CBuffer() noexcept {}
+        CBuffer(const void* pData, std::uint32_t uiSize) noexcept { AddBytes(pData, uiSize, 0); }
 
-        void ZeroClear() { std::fill(begin(), end(), 0); }
-        void Clear() { clear(); }
+        void ZeroClear() noexcept { std::fill(begin(), end(), 0); }
+        void Clear() noexcept { clear(); }
 
-        bool IsEmpty() const { return empty(); }
+        bool IsEmpty() const noexcept { return empty(); }
 
-        void Reserve(uint uiSize) { return reserve(uiSize); }
+        void Reserve(std::uint32_t uiSize) { return reserve(uiSize); }
 
         // Comparison
-        bool operator==(const CBuffer& other) const { return size() == other.size() && std::equal(begin(), end(), other.begin()); }
+        bool operator==(const CBuffer& other) const {
+            return size() == other.size() && std::equal(begin(), end(), other.begin());
+        }
 
         bool operator!=(const CBuffer& other) const { return !operator==(other); }
 
         // Status
-        void SetSize(uint uiSize, bool bZeroPad = false)
+        void SetSize(std::uint32_t uiSize, bool bZeroPad = false)
         {
-            uint uiOldSize = (uint)size();
+            std::uint32_t uiOldSize = (std::uint32_t)size();
             resize(uiSize);
             if (bZeroPad && uiSize > uiOldSize)
                 memset(GetData() + uiOldSize, 0, uiSize - uiOldSize);
         }
 
-        uint GetSize() const { return (uint)size(); }
+        std::uint32_t GetSize() const { return (std::uint32_t)size(); }
 
         // Access
-        char* GetData(uint uiOffset = 0) { return size() ? &at(uiOffset) : NULL; }
+        char* GetData(std::uint32_t uiOffset = 0) noexcept { return size() ? &at(uiOffset) : NULL; }
 
-        const char* GetData(uint uiOffset = 0) const { return size() ? &at(uiOffset) : NULL; }
+        const char* GetData(std::uint32_t uiOffset = 0) const noexcept { return size() ? &at(uiOffset) : NULL; }
 
         // Joining
         CBuffer operator+(const CBuffer& other) const
@@ -101,9 +102,9 @@ namespace SharedUtil
             return CBuffer(GetData() + iOffset, iSize);
         }
 
-        CBuffer Head(uint uiAmount) const { return Mid(0, uiAmount); }
+        CBuffer Head(std::uint32_t uiAmount) const { return Mid(0, uiAmount); }
 
-        CBuffer Tail(uint uiAmount) const
+        CBuffer Tail(std::uint32_t uiAmount) const
         {
             uiAmount = std::min(uiAmount, GetSize());
             return Mid(GetSize() - uiAmount, uiAmount);
@@ -114,7 +115,7 @@ namespace SharedUtil
         bool SaveToFile(const char* szFilename) const { return FileSave(szFilename, GetData(), GetSize()); }
 
     protected:
-        void AddBytes(const void* pData, uint uiLength, int iOffset, bool bToFromNetwork = false)
+        void AddBytes(const void* pData, std::uint32_t uiLength, int iOffset, bool bToFromNetwork = false)
         {
             // More room required?
             if (iOffset + uiLength > GetSize())
@@ -132,7 +133,7 @@ namespace SharedUtil
                 memcpy(GetData() + iOffset, pData, uiLength);
         }
 
-        bool GetBytes(void* pData, uint uiLength, int iOffset, bool bToFromNetwork = false) const
+        bool GetBytes(void* pData, std::uint32_t uiLength, int iOffset, bool bToFromNetwork = false) const
         {
             // Not enough data to get?
             if (iOffset + uiLength > GetSize())
@@ -171,8 +172,8 @@ namespace SharedUtil
         int         Tell() const { return m_iPos; }
         virtual int GetSize() const = 0;
         bool        AtEnd(int iOffset = 0) const { return m_iPos + iOffset >= GetSize(); }
-        void        SetVersion(uint uiVersion) { m_uiVersion = uiVersion; }
-        uint        Version() const { return m_uiVersion; }
+        void        SetVersion(std::uint32_t uiVersion) { m_uiVersion = uiVersion; }
+        std::uint32_t        Version() const { return m_uiVersion; }
 
     protected:
         int  m_iPos;
@@ -194,8 +195,8 @@ namespace SharedUtil
     public:
         CBufferReadStream(const CBuffer& source, bool bToFromNetwork = false) : CBufferStream(bToFromNetwork), pBuffer(&source) {}
 
-        virtual int         GetSize() const { return pBuffer->GetSize(); }
-        virtual const char* GetData() const { return pBuffer->GetData(); }
+        virtual int         GetSize() const noexcept { return pBuffer->GetSize(); }
+        virtual const char* GetData() const noexcept { return pBuffer->GetData(); }
 
         // Return true if enough bytes left in the buffer
         bool CanReadNumberOfBytes(int iLength)
@@ -224,10 +225,10 @@ namespace SharedUtil
             result = "";
 
             // Get the length
-            ushort usLength = 0;
+            std::uint16_t usLength = 0;
             if (bByteLength)
             {
-                uchar ucLength = 0;
+                std::uint8_t ucLength = 0;
                 if (!Read(ucLength))
                     return false;
                 usLength = ucLength;
@@ -238,18 +239,19 @@ namespace SharedUtil
             if (bDoesLengthIncludeLengthOfLength && usLength)
                 usLength -= bByteLength ? 1 : 2;
 
-            if (usLength)
-            {
-                // Check has enough data
-                if (!CanReadNumberOfBytes(usLength))
-                    return false;
-                // Read the data
-                CScopeAlloc<char> buffer(usLength);
-                if (!ReadBytes(buffer, usLength, false))
-                    return false;
+            if (!usLength)
+                return true;
+                
+            // Check has enough data
+            if (!CanReadNumberOfBytes(usLength))
+                return false;
+            // Read the data
+            CScopeAlloc<char> buffer(usLength);
+            if (!ReadBytes(buffer, usLength, false))
+                return false;
 
-                result = std::string(buffer, usLength);
-            }
+            result = std::string(buffer, usLength);
+            
             return true;
         }
 
@@ -258,27 +260,28 @@ namespace SharedUtil
             outResult.Clear();
 
             // Get the length
-            ushort usLength = 0;
+            std::uint16_t usLength = 0;
             if (!Read(usLength))
                 return false;
 
-            uint uiLength = usLength;
+            std::uint32_t uiLength = usLength;
             if (uiLength == 65535)
                 if (!Read(uiLength))
                     return false;
 
-            if (uiLength)
+            if (!uiLength)
+                return true;
+                
+            // Check has enough data
+            if (!CanReadNumberOfBytes(uiLength))
+                return false;
+
+            // Read the data
+            outResult.SetSize(uiLength);
+            if (!ReadBytes(outResult.GetData(), uiLength, false))
             {
-                // Check has enough data
-                if (!CanReadNumberOfBytes(uiLength))
-                    return false;
-                // Read the data
-                outResult.SetSize(uiLength);
-                if (!ReadBytes(outResult.GetData(), uiLength, false))
-                {
-                    outResult.Clear();
-                    return false;
-                }
+                outResult.Clear();
+                return false;
             }
             return true;
         }
@@ -291,9 +294,9 @@ namespace SharedUtil
 
 #if defined(ANY_x64) || defined(ANY_arm64)
         // Force all these types to use 4 bytes
-        bool Read(unsigned long& e)
+        bool Read(std::uint32_t& e)
         {
-            uint temp;
+            std::uint32_t temp;
             bool bResult = Read(temp);
             e = temp;
             return bResult;
@@ -308,7 +311,7 @@ namespace SharedUtil
     #ifdef WIN_x64
         bool Read(size_t& e)
         {
-            uint temp;
+            std::uint32_t temp;
             bool bResult = Read(temp);
             e = temp;
             return bResult;
@@ -331,7 +334,7 @@ namespace SharedUtil
     public:
         CBufferWriteStream(CBuffer& source, bool bToFromNetwork = false) : CBufferStream(bToFromNetwork), pBuffer(&source) {}
 
-        virtual int GetSize() const { return pBuffer->GetSize(); }
+        virtual int GetSize() const noexcept { return pBuffer->GetSize(); }
 
         void WriteBytes(const void* pData, int iLength, bool bToFromNetwork = false)
         {
@@ -347,12 +350,12 @@ namespace SharedUtil
         void Write(const CBuffer&);            // Not defined as it won't work
         void WriteString(const SString& str, bool bByteLength = false, bool bDoesLengthIncludeLengthOfLength = false)
         {
-            ushort usLength = (ushort)str.length();
+            std::uint16_t usLength = (std::uint16_t)str.length();
             if (bDoesLengthIncludeLengthOfLength && usLength)
                 usLength += bByteLength ? 1 : 2;
 
             if (bByteLength)
-                Write((uchar)usLength);
+                Write((std::uint8_t)usLength);
             else
                 Write(usLength);
 
@@ -363,15 +366,15 @@ namespace SharedUtil
         void WriteBuffer(const CBuffer& inBuffer)
         {
             // Write the length
-            uint uiLength = (uint)inBuffer.GetSize();
+            std::uint32_t uiLength = (std::uint32_t)inBuffer.GetSize();
             if (uiLength > 65534)
             {
-                Write((ushort)65535);
+                Write((std::uint16_t)65535);
                 Write(uiLength);
             }
             else
             {
-                Write((ushort)uiLength);
+                Write((std::uint16_t)uiLength);
             }
 
             // Write the data
@@ -387,10 +390,10 @@ namespace SharedUtil
 
 #if defined(ANY_x64) || defined(ANY_arm64)
         // Force all these types to use 4 bytes
-        void Write(unsigned long e) { Write((uint)e); }
+        void Write(std::uint32_t e) { Write((std::uint32_t)e); }
         void Write(long e) { Write((int)e); }
     #ifdef WIN_x64
-        void Write(size_t e) { Write((uint)e); }
+        void Write(size_t e) { Write((std::uint32_t)e); }
     #endif
 #endif
     };

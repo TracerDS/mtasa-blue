@@ -16,22 +16,22 @@
 class CCustomWeaponBulletSyncPacket final : public CPacket
 {
 public:
-    CCustomWeaponBulletSyncPacket(){};
-    CCustomWeaponBulletSyncPacket(class CPlayer* pPlayer);
+    CCustomWeaponBulletSyncPacket() noexcept {};
+    CCustomWeaponBulletSyncPacket(class CPlayer* pPlayer) noexcept;
 
-    ePacketID     GetPacketID() const { return PACKET_ID_WEAPON_BULLETSYNC; };
-    unsigned long GetFlags() const { return PACKET_MEDIUM_PRIORITY | PACKET_RELIABLE; };
+    ePacketID     GetPacketID() const noexcept { return PACKET_ID_WEAPON_BULLETSYNC; };
+    std::uint32_t GetFlags() const noexcept { return PACKET_MEDIUM_PRIORITY | PACKET_RELIABLE; };
 
-    bool Read(NetBitStreamInterface& BitStream);
-    bool Write(NetBitStreamInterface& BitStream) const;
+    bool Read(NetBitStreamInterface& BitStream) noexcept;
+    bool Write(NetBitStreamInterface& BitStream) const noexcept;
 
-    CPlayer*       GetWeaponOwner() { return m_pWeapon != NULL ? m_pWeapon->GetOwner() : NULL; };
-    CCustomWeapon* GetWeapon() { return m_pWeapon; };
-    CVector        GetStart() { return m_vecStart; };
-    CVector        GetEnd() { return m_vecEnd; };
+    CPlayer*       GetWeaponOwner() noexcept { return m_pWeapon ? m_pWeapon->GetOwner() : nullptr; };
+    CCustomWeapon* GetWeapon() noexcept { return m_pWeapon; };
+    CVector        GetStart() noexcept { return m_vecStart; };
+    CVector        GetEnd() noexcept { return m_vecEnd; };
 
     CCustomWeapon* m_pWeapon;
     CVector        m_vecStart;
     CVector        m_vecEnd;
-    uchar          m_ucOrderCounter;
+    std::uint8_t   m_ucOrderCounter;
 };

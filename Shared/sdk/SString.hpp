@@ -14,6 +14,12 @@
 #include "SharedUtil.Defines.h"
 #include "SharedUtil.Misc.h"
 
+#ifdef min
+    #undef min
+#endif
+#ifdef max
+    #undef max
+#endif
 //
 // Format a string
 //
@@ -354,7 +360,7 @@ SString SString::TrimEnd(const char* szOld) const
 SString SString::ToLower() const
 {
     SString strResult = *this;
-    std::transform(strResult.begin(), strResult.end(), strResult.begin(), SharedUtil::tolower<uchar>);
+    std::transform(strResult.begin(), strResult.end(), strResult.begin(), SharedUtil::tolower<std::uint8_t>);
     return strResult;
 }
 
@@ -364,7 +370,7 @@ SString SString::ToLower() const
 SString SString::ToUpper() const
 {
     SString strResult = *this;
-    std::transform(strResult.begin(), strResult.end(), strResult.begin(), SharedUtil::toupper<uchar>);
+    std::transform(strResult.begin(), strResult.end(), strResult.begin(), SharedUtil::toupper<std::uint8_t>);
     return strResult;
 }
 
@@ -469,7 +475,7 @@ SString SString::Join(const SString& strDelim, const std::vector<SString>& parts
     return strResult;
 }
 
-void SString::AssignLeft(const char* szOther, uint uiMaxLength)
+void SString::AssignLeft(const char* szOther, std::uint32_t uiMaxLength)
 {
     assign(SStringX(szOther).Left(uiMaxLength));
 }

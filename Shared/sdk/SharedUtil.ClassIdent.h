@@ -10,36 +10,36 @@
  *****************************************************************************/
 #pragma once
 
-#include "SharedUtil.IntTypes.h"
+#include <cstdint>
 
 namespace SharedUtil
 {
     // Macros to implement quick class identification
 
-    // uint64 allows for a total of 64 classes
-    typedef uint64 ClassBits;
-    typedef uchar  ClassId;
+    // std::uint64_t allows for a total of 64 classes
+    using ClassBits = std::uint64_t;
+    using ClassId = std::uint8_t;
 
     #define DECLARE_BASE_CLASS(cls) \
         public: \
-            static ClassId GetClassId ( void ) \
+            static ClassId GetClassId() noexcept \
             { \
                 return CLASS_##cls; \
             } \
-            bool IsA( ClassId classId ) const \
+            bool IsA(ClassId classId) const noexcept \
             { \
                 return ( ClassHierarchyBits & ( 1ULL << classId ) ) ? true : false; \
             } \
-            const char* GetClassName ( void ) \
+            const char* GetClassName() const noexcept \
             { \
                 return ClassName; \
             } \
         protected: \
-            static const char* StaticGetClassName ( void ) \
+            static const char* StaticGetClassName() noexcept \
             { \
                 return #cls; \
             } \
-            static ClassBits CalcClassHierarchyBits ( void ) \
+            static ClassBits CalcClassHierarchyBits() noexcept \
             { \
                 return ( 1ULL << GetClassId () ); \
             } \
@@ -53,23 +53,23 @@ namespace SharedUtil
 
     #define DECLARE_CLASS(cls,super) \
         public: \
-            static ClassId GetClassId ( void ) \
+            static ClassId GetClassId() const noexcept \
             { \
                 return CLASS_##cls; \
             } \
         protected: \
-            static const char* StaticGetClassName ( void ) \
+            static const char* StaticGetClassName() noexcept \
             { \
                 return #cls; \
             } \
-            static ClassBits CalcClassHierarchyBits ( void ) \
+            static ClassBits CalcClassHierarchyBits() noexcept \
             { \
                 return ( 1ULL << GetClassId () ) | super::CalcClassHierarchyBits (); \
             } \
             friend CAutoClassInit < cls >; \
             CAutoClassInit < cls > ClassInit; \
         public: \
-            typedef super Super; \
+            using Super = super; \
             void* operator new ( size_t size )              { void* ptr = ::operator new(size); memset(ptr,0,size); return ptr; } \
             void* operator new ( size_t size, void* where ) { memset(where,0,size); return where; }
 
@@ -99,7 +99,7 @@ namespace SharedUtil
         return NULL;
     }
 
-    #ifdef WIN32
+    #ifdef _WIN32
         #pragma warning( disable : 4355 )   // warning C4355: 'this' : used in base member initializer list
     #endif
 }            // namespace SharedUtil

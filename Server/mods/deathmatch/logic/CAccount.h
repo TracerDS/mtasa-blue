@@ -63,7 +63,7 @@ public:
         SString strLastLoginIp;
         time_t  tLastLoginDate;
         time_t  tLastLoginHttpDate;
-        bool    IsAuthorized() const { return tAuthDate != 0; }
+        bool    IsAuthorized() const noexcept { return tAuthDate != 0; }
     };
 
     ZERO_ON_NEW
@@ -71,8 +71,8 @@ public:
              const std::string& strIP = "", const std::string& strSerial = "", const SString& strHttpPassAppend = "");
     ~CAccount();
 
-    bool IsRegistered() { return m_AccountType != EAccountType::Guest; }
-    bool IsConsoleAccount() { return m_AccountType == EAccountType::Console; }
+    bool IsRegistered() const noexcept { return m_AccountType != EAccountType::Guest; }
+    bool IsConsoleAccount() const noexcept { return m_AccountType == EAccountType::Console; }
     void OnLoginSuccess(const SString& strSerial, const SString& strIp);
     void OnLoginHttpSuccess(const SString& strIp);
 
@@ -82,12 +82,12 @@ public:
     void           SetPassword(const SString& strPassword);
     bool           IsPassword(const SString& strPassword, bool* pbUsedHttpPassAppend = nullptr);
     SString        GetPasswordHash();
-    const SString& GetHttpPassAppend() { return m_strHttpPassAppend; }
+    const SString& GetHttpPassAppend() const noexcept { return m_strHttpPassAppend; }
     void           SetHttpPassAppend(const SString& strHttpPassAppend);
 
-    const std::string& GetIP() { return m_strIP; }
-    const std::string& GetSerial() { return m_strSerial; }
-    int                GetID() { return m_iUserID; }
+    const std::string& GetIP() const noexcept { return m_strIP; }
+    const std::string& GetSerial() const noexcept { return m_strSerial; }
+    int                GetID() const noexcept { return m_iUserID; }
 
     bool                       HasLoadedSerialUsage();
     void                       EnsureLoadedSerialUsage();
@@ -100,12 +100,12 @@ public:
     bool                       RemoveSerial(const SString& strSerial);
     void                       RemoveUnauthorizedSerials();
 
-    CClient* GetClient() { return m_pClient; }
+    CClient* GetClient() const noexcept { return m_pClient; }
     void     SetClient(CClient* pClient);
 
-    void SetChanged(bool bChanged) { m_bChanged = bChanged; }
-    bool HasChanged() { return m_bChanged; }
-    uint GetScriptID() const { return m_uiScriptID; }
+    void SetChanged(bool bChanged) noexcept { m_bChanged = bChanged; }
+    bool HasChanged() const noexcept { return m_bChanged; }
+    std::uint32_t GetScriptID() const noexcept { return m_uiScriptID; }
 
     std::shared_ptr<CLuaArgument>             GetData(const std::string& strKey);
     bool                                      SetData(const std::string& strKey, const std::string& strValue, int iType);
@@ -131,8 +131,8 @@ protected:
 
     bool m_bChanged;
 
-    class CClient* m_pClient;
-    uint           m_uiScriptID;
+    CClient* m_pClient;
+    std::uint32_t m_uiScriptID;
 
     std::map<SString, CAccountData> m_Data;
 };
@@ -147,9 +147,9 @@ public:
         m_iType = iType;
     }
 
-    const std::string& GetKey() { return m_strKey; }
-    const std::string& GetStrValue() { return m_strValue; }
-    int                GetType() { return m_iType; }
+    const std::string& GetKey() const noexcept { return m_strKey; }
+    const std::string& GetStrValue() const noexcept { return m_strValue; }
+    int                GetType() const noexcept { return m_iType; }
     void               SetStrValue(const std::string& strValue) { m_strValue = strValue; }
     void               SetType(int iType) { m_iType = iType; }
 

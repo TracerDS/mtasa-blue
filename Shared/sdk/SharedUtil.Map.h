@@ -13,7 +13,6 @@
 #include <map>
 #include <set>
 #include <vector>
-#include "SharedUtil.IntTypes.h"
 
 namespace SharedUtil
 {
@@ -58,7 +57,7 @@ namespace SharedUtil
     {
         typename std::map<T, V, TR>::iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return &it->second;
     }
 
@@ -68,7 +67,7 @@ namespace SharedUtil
     {
         typename std::map<T, V, TR>::const_iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return &it->second;
     }
 
@@ -78,7 +77,7 @@ namespace SharedUtil
     {
         typename std::map<T, V, TR>::iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return it->second;
     }
 
@@ -88,7 +87,7 @@ namespace SharedUtil
     {
         typename std::map<T, V, TR>::const_iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return it->second;
     }
 
@@ -107,9 +106,9 @@ namespace SharedUtil
 
     // Remove value from collection. Returns number of pairs removed
     template <class T, class V2>
-    uint MapRemoveByValue(T& collection, const V2& value)
+    std::uint32_t MapRemoveByValue(T& collection, const V2& value)
     {
-        uint                 uiCount = 0;
+        std::uint32_t uiCount = 0;
         typename T::iterator it = collection.begin();
         for (; it != collection.end();)
         {
@@ -167,7 +166,7 @@ namespace SharedUtil
     {
         typename std::multimap<T, V, TR>::const_iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return &it->second;
     }
 

@@ -26,7 +26,7 @@ class CRegistry
     ~CRegistry();
 
 public:
-    void SuspendBatching(uint uiTicks);
+    void SuspendBatching(std::uint32_t uiTicks);
     void Load(const std::string& strFileName);
     bool IntegrityCheck();
 
@@ -35,14 +35,14 @@ public:
 
     bool Delete(const std::string& strTable, const std::string& strWhere);
     bool Insert(const std::string& strTable, const std::string& strValues, const std::string& strColumns);
-    bool Select(const std::string& strColumns, const std::string& strTable, const std::string& strWhere, unsigned int uiLimit, CRegistryResult* pResult);
+    bool Select(const std::string& strColumns, const std::string& strTable, const std::string& strWhere, std::uint32_t uiLimit, CRegistryResult* pResult);
     bool Update(const std::string& strTable, const std::string& strSet, const std::string& strWhere);
 
     bool Query(const std::string& strQuery, class CLuaArguments* pArgs, CRegistryResult* pResult);
     bool Query(const char* szQuery, ...);
     bool Query(CRegistryResult* pResult, const char* szQuery, ...);
 
-    const SString& GetLastError() { return m_strLastErrorMessage; }
+    const SString& GetLastError() const noexcept { return m_strLastErrorMessage; }
 
 protected:
     bool SetLastErrorMessage(const std::string& strLastErrorMessage, const std::string& strQuery);
@@ -67,32 +67,27 @@ private:
 
 struct CRegistryResultCell
 {
-    CRegistryResultCell()
-    {
-        nType = SQLITE_NULL;
-        nLength = 0;
-        pVal = NULL;
-    }
-    CRegistryResultCell(const CRegistryResultCell& cell)
+    constexpr CRegistryResultCell() noexcept {}
+
+    CRegistryResultCell(const CRegistryResultCell& cell) noexcept
     {
         nType = cell.nType;
         nLength = cell.nLength;
         nVal = cell.nVal;
         fVal = cell.fVal;
-        pVal = NULL;
         if ((nType == SQLITE_BLOB || nType == SQLITE_TEXT) && cell.pVal && nLength > 0)
         {
-            pVal = new unsigned char[nLength];
+            pVal = new std::uint8_t[nLength];
             memcpy(pVal, cell.pVal, nLength);
         }
     };
-    ~CRegistryResultCell()
+    ~CRegistryResultCell() noexcept
     {
         if (pVal)
             delete[] pVal;
     }
 
-    CRegistryResultCell& operator=(const CRegistryResultCell& cell)
+    CRegistryResultCell& operator=(const CRegistryResultCell& cell) noexcept
     {
         if (pVal)
             delete[] pVal;
@@ -101,23 +96,23 @@ struct CRegistryResultCell
         nLength = cell.nLength;
         nVal = cell.nVal;
         fVal = cell.fVal;
-        pVal = NULL;
+        pVal = nullptr;
         if ((nType == SQLITE_BLOB || nType == SQLITE_TEXT) && cell.pVal && nLength > 0)
         {
-            pVal = new unsigned char[nLength];
+            pVal = new std::uint8_t[nLength];
             memcpy(pVal, cell.pVal, nLength);
         }
         return *this;
     }
 
     template <class T>
-    void GetNumber(T& outValue) const
+    constexpr void GetNumber(T& outValue) const noexcept
     {
         outValue = GetNumber<T>();
     }
 
     template <class T>
-    T GetNumber() const
+    constexpr T GetNumber() const noexcept
     {
         if (nType == SQLITE_INTEGER)
             return static_cast<T>(nVal);
@@ -126,37 +121,36 @@ struct CRegistryResultCell
         return 0;
     }
 
-    int nType;              // Type identifier, SQLITE_*
-    int nLength;            // Length in bytes if nType == SQLITE_BLOB or SQLITE_TEXT
-                            //    (includes zero terminator if TEXT)
-    long long int  nVal;
-    float          fVal;
-    unsigned char* pVal;
+    int nType{ SQLITE_NULL }; // Type identifier, SQLITE_*
+    int nLength{ 0 };         // Length in bytes if nType == SQLITE_BLOB or SQLITE_TEXT
+                              // (includes zero terminator if TEXT)
+    std::int64_t  nVal{ 0 };
+    float         fVal{ 0 };
+    std::uint8_t* pVal{ nullptr };
 };
 
-typedef std::vector<CRegistryResultCell>              CRegistryResultRow;
-typedef std::list<CRegistryResultRow>::const_iterator CRegistryResultIterator;
+using CRegistryResultRow = std::vector<CRegistryResultCell>;
+using CRegistryResultIterator = std::list<CRegistryResultRow>::const_iterator;
 
 struct CRegistryResultData
 {
-    CRegistryResultData()
-    {
-        nRows = 0;
-        nColumns = 0;
-        uiNumAffectedRows = 0;
-        ullLastInsertId = 0;
-        pNextResult = nullptr;
-    }
+    CRegistryResultData() noexcept {}
     ~CRegistryResultData() { SAFE_DELETE(pNextResult); }
+
+    CRegistryResultData* GetThis() noexcept { return this; }
+    const CRegistryResultData* GetThis() const noexcept { return this; }
+
+    CRegistryResultIterator begin() const noexcept { return Data.begin(); }
+    CRegistryResultIterator end() const noexcept { return Data.end(); }
+
+    const CRegistryResultIterator cbegin() const noexcept { return Data.cbegin(); }
+    const CRegistryResultIterator cend() const noexcept { return Data.cend(); }
+
     std::vector<SString>          ColNames;
     std::list<CRegistryResultRow> Data;
-    int                           nRows;
-    int                           nColumns;
-    uint                          uiNumAffectedRows;
-    uint64                        ullLastInsertId;
-    CRegistryResultData*          pNextResult;
-
-    CRegistryResultData*    GetThis() { return this; }
-    CRegistryResultIterator begin() const { return Data.begin(); }
-    CRegistryResultIterator end() const { return Data.end(); }
+    int                           nRows{0};
+    int                           nColumns{0};
+    std::uint32_t                 uiNumAffectedRows{0};
+    std::uint64_t                 ullLastInsertId{0};
+    CRegistryResultData*          pNextResult{nullptr};
 };

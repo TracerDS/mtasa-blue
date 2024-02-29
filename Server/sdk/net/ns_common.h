@@ -15,6 +15,8 @@
 #include "net/packetenums.h"
 #include "ns_playerid.h"
 
+#include <cstdint>
+
 const NetServerPlayerID NET_INVALID_PLAYER_ID;
 #define NET_INVALID_PLAYER_INDEX 255;
 
@@ -32,7 +34,7 @@ typedef struct __static_server_data_t
 {
 } static_server_data_t, *pstatic_server_data_t;
 
-typedef bool (*PPACKETHANDLER)(unsigned char, const NetServerPlayerID&, NetBitStreamInterface*, SNetExtraInfo*);
+using PPACKETHANDLER = bool (*)(std::uint8_t, const NetServerPlayerID&, NetBitStreamInterface*, SNetExtraInfo*);
 
 enum NetServerPacketPriority
 {
@@ -54,58 +56,58 @@ enum NetServerPacketReliability
 // Copy of raknet statistics
 struct NetRawStatistics
 {
-    unsigned  messageSendBuffer[4];
-    unsigned  messagesSent[4];
-    long long messageDataBitsSent[4];
-    long long messageTotalBitsSent[4];
-    unsigned  packetsContainingOnlyAcknowlegements;
-    unsigned  acknowlegementsSent;
-    unsigned  acknowlegementsPending;
-    long long acknowlegementBitsSent;
-    unsigned  packetsContainingOnlyAcknowlegementsAndResends;
-    unsigned  messageResends;
-    long long messageDataBitsResent;
-    long long messagesTotalBitsResent;
-    unsigned  messagesOnResendQueue;
-    unsigned  numberOfUnsplitMessages;
-    unsigned  numberOfSplitMessages;
-    unsigned  totalSplits;
-    unsigned  packetsSent;
-    long long encryptionBitsSent;
-    long long totalBitsSent;
-    unsigned  sequencedMessagesOutOfOrder;
-    unsigned  sequencedMessagesInOrder;
-    unsigned  orderedMessagesOutOfOrder;
-    unsigned  orderedMessagesInOrder;
-    unsigned  packetsReceived;
-    unsigned  packetsWithBadCRCReceived;
-    long long bitsReceived;
-    long long bitsWithBadCRCReceived;
-    unsigned  acknowlegementsReceived;
-    unsigned  duplicateAcknowlegementsReceived;
-    unsigned  messagesReceived;
-    unsigned  invalidMessagesReceived;
-    unsigned  duplicateMessagesReceived;
-    unsigned  messagesWaitingForReassembly;
-    unsigned  internalOutputQueueSize;
+    std::uint32_t messageSendBuffer[4];
+    std::uint32_t messagesSent[4];
+    std::int64_t messageDataBitsSent[4];
+    std::int64_t messageTotalBitsSent[4];
+    std::uint32_t packetsContainingOnlyAcknowlegements;
+    std::uint32_t acknowlegementsSent;
+    std::uint32_t acknowlegementsPending;
+    std::int64_t acknowlegementBitsSent;
+    std::uint32_t packetsContainingOnlyAcknowlegementsAndResends;
+    std::uint32_t messageResends;
+    std::int64_t messageDataBitsResent;
+    std::int64_t messagesTotalBitsResent;
+    std::uint32_t messagesOnResendQueue;
+    std::uint32_t numberOfUnsplitMessages;
+    std::uint32_t numberOfSplitMessages;
+    std::uint32_t totalSplits;
+    std::uint32_t packetsSent;
+    std::int64_t encryptionBitsSent;
+    std::int64_t totalBitsSent;
+    std::uint32_t sequencedMessagesOutOfOrder;
+    std::uint32_t sequencedMessagesInOrder;
+    std::uint32_t orderedMessagesOutOfOrder;
+    std::uint32_t orderedMessagesInOrder;
+    std::uint32_t packetsReceived;
+    std::uint32_t packetsWithBadCRCReceived;
+    std::int64_t bitsReceived;
+    std::int64_t bitsWithBadCRCReceived;
+    std::uint32_t acknowlegementsReceived;
+    std::uint32_t duplicateAcknowlegementsReceived;
+    std::uint32_t messagesReceived;
+    std::uint32_t invalidMessagesReceived;
+    std::uint32_t duplicateMessagesReceived;
+    std::uint32_t messagesWaitingForReassembly;
+    std::uint32_t internalOutputQueueSize;
     double    bitsPerSecond;
-    long long connectionStartTime;
+    std::int64_t connectionStartTime;
     bool      bandwidthExceeded;
 };
 
 struct NetStatistics
 {
     // Needed for getNetworkStats()
-    unsigned long long bytesReceived;
-    unsigned long long bytesSent;
-    uint               packetsReceived;
-    uint               packetsSent;
-    float              packetlossTotal;
-    float              packetlossLastSecond;
-    uint               messagesInSendBuffer;
-    uint               messagesInResendBuffer;
-    bool               isLimitedByCongestionControl;
-    bool               isLimitedByOutgoingBandwidthLimit;
+    std::uint64_t bytesReceived;
+    std::uint64_t bytesSent;
+    std::uint32_t packetsReceived;
+    std::uint32_t packetsSent;
+    std::uint32_t messagesInSendBuffer;
+    std::uint32_t messagesInResendBuffer;
+    bool          isLimitedByCongestionControl;
+    bool          isLimitedByOutgoingBandwidthLimit;
+    float         packetlossTotal;
+    float         packetlossLastSecond;
 
     // Copy of raknet statistics
     NetRawStatistics raw;
@@ -113,45 +115,45 @@ struct NetStatistics
 
 struct SBandwidthStatistics
 {
-    long long       llOutgoingUDPByteCount;
-    long long       llIncomingUDPByteCount;
-    long long       llIncomingUDPByteCountBlocked;
-    long long       llOutgoingUDPPacketCount;
-    long long       llIncomingUDPPacketCount;
-    long long       llIncomingUDPPacketCountBlocked;
-    long long       llOutgoingUDPByteResentCount;
-    long long       llOutgoingUDPMessageResentCount;
+    std::int64_t llOutgoingUDPByteCount;
+    std::int64_t llIncomingUDPByteCount;
+    std::int64_t llIncomingUDPByteCountBlocked;
+    std::int64_t llOutgoingUDPPacketCount;
+    std::int64_t llIncomingUDPPacketCount;
+    std::int64_t llIncomingUDPPacketCountBlocked;
+    std::int64_t llOutgoingUDPByteResentCount;
+    std::int64_t llOutgoingUDPMessageResentCount;
     SThreadCPUTimes threadCPUTimes;
 };
 
 struct SNetPerformanceStatistics
 {
-    uint  uiUpdateCycleRecvTimeAvgUs;
-    uint  uiUpdateCycleSendTimeAvgUs;
-    uint  uiUpdateCycleRecvTimeMaxUs;
-    uint  uiUpdateCycleSendTimeMaxUs;
-    float fUpdateCycleRecvDatagramsAvg;
-    uint  uiUpdateCycleRecvDatagramsMax;
-    float fUpdateCycleDatagramsAvg;
-    uint  uiUpdateCycleDatagramsMax;
-    uint  uiUpdateCycleDatagramsLimit;
-    float fUpdateCycleMessagesAvg;
-    uint  uiUpdateCycleMessagesMax;
-    uint  uiUpdateCycleMessagesLimit;
-    uint  uiUpdateCycleSendsLimitedTotal;
-    float fUpdateCycleSendsLimitedPercent;
+    std::uint32_t uiUpdateCycleRecvTimeAvgUs;
+    std::uint32_t uiUpdateCycleSendTimeAvgUs;
+    std::uint32_t uiUpdateCycleRecvTimeMaxUs;
+    std::uint32_t uiUpdateCycleSendTimeMaxUs;
+    std::uint32_t uiUpdateCycleRecvDatagramsMax;
+    std::uint32_t uiUpdateCycleDatagramsMax;
+    std::uint32_t uiUpdateCycleDatagramsLimit;
+    std::uint32_t uiUpdateCycleMessagesMax;
+    std::uint32_t uiUpdateCycleMessagesLimit;
+    std::uint32_t uiUpdateCycleSendsLimitedTotal;
+    float         fUpdateCycleSendsLimitedPercent;
+    float         fUpdateCycleRecvDatagramsAvg;
+    float         fUpdateCycleDatagramsAvg;
+    float         fUpdateCycleMessagesAvg;
 };
 
 struct SSyncThreadStatistics
 {
-    uint  uiRecvTimeAvgUs;
-    uint  uiSendTimeAvgUs;
-    uint  uiRecvTimeMaxUs;
-    uint  uiSendTimeMaxUs;
-    float fRecvMsgsAvg;
-    uint  uiRecvMsgsMax;
-    float fSendCmdsAvg;
-    uint  uiSendCmdsMax;
+    std::uint32_t uiRecvTimeAvgUs;
+    std::uint32_t uiSendTimeAvgUs;
+    std::uint32_t uiRecvTimeMaxUs;
+    std::uint32_t uiSendTimeMaxUs;
+    std::uint32_t uiRecvMsgsMax;
+    std::uint32_t uiSendCmdsMax;
+    float         fRecvMsgsAvg;
+    float         fSendCmdsAvg;
 };
 
 enum ePacketOrdering
@@ -162,7 +164,9 @@ enum ePacketOrdering
     PACKET_ORDERING_VOICE,
 };
 
-// Typedefs to make shared code easier
-typedef NetServerPlayerID          NetPlayerID;
-typedef NetServerPacketPriority    NetPacketPriority;
-typedef NetServerPacketReliability NetPacketReliability;
+// Typedefs to make shared code easier (?????)
+/*
+using NetPlayerID = NetServerPlayerID;
+using NetPacketPriority = NetServerPacketPriority;
+using NetPacketReliability = NetServerPacketReliability;
+*/

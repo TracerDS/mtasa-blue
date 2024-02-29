@@ -66,7 +66,7 @@ enum ePedMoveAnim
     MOVE_SKATE,
 };
 
-inline bool IsValidMoveAnim(uint iMoveAnim)
+inline bool IsValidMoveAnim(std::uint32_t iMoveAnim)
 {
     return (iMoveAnim == MOVE_DEFAULT) || (iMoveAnim >= MOVE_PLAYER && iMoveAnim <= MOVE_JETPACK) || (iMoveAnim >= MOVE_MAN && iMoveAnim <= MOVE_SKATE);
 }
@@ -103,18 +103,11 @@ enum eBone
     BONE_RIGHTFOOT
 };
 
-class CWeapon
+struct CWeapon
 {
-public:
-    CWeapon()
-    {
-        ucType = 0;
-        usAmmo = 0;
-        usAmmoInClip = 0;
-    }
-    unsigned char  ucType;
-    unsigned short usAmmo;
-    unsigned short usAmmoInClip;
+    std::uint8_t  ucType = 0;
+    std::uint16_t usAmmo = 0;
+    std::uint16_t usAmmoInClip = 0;
 };
 
 class CPed : public CElement
@@ -131,158 +124,163 @@ public:
         VEHICLEACTION_JACKED,
     };
 
-    CPed(class CPedManager* pPedManager, CElement* pParent, unsigned short usModel);
+    CPed(class CPedManager* pPedManager, CElement* pParent, std::uint16_t usModel);
     ~CPed();
     CElement* Clone(bool* bAddEntity, CResource* pResource) override;
 
-    bool IsEntity() { return true; }
+    bool IsEntity() const noexcept { return true; }
 
     virtual void Unlink();
 
     bool HasValidModel();
 
-    bool           IsPlayer() { return m_bIsPlayer; }
-    unsigned short GetModel() { return m_usModel; };
-    void           SetModel(unsigned short usModel) { m_usModel = usModel; };
+    bool          IsPlayer() const noexcept { return m_bIsPlayer; }
+    std::uint16_t GetModel() const noexcept { return m_usModel; };
+    void          SetModel(std::uint16_t usModel) noexcept { m_usModel = usModel; };
 
-    bool IsDucked() { return m_bDucked; };
-    void SetDucked(bool bDucked) { m_bDucked = bDucked; };
+    bool IsDucked() const noexcept { return m_bDucked; };
+    void SetDucked(bool bDucked) noexcept { m_bDucked = bDucked; };
 
-    bool IsChoking() { return m_bIsChoking; };
-    void SetChoking(bool bChoking) { m_bIsChoking = bChoking; };
+    bool IsChoking() const noexcept { return m_bIsChoking; };
+    void SetChoking(bool bChoking) noexcept { m_bIsChoking = bChoking; };
 
-    bool IsWearingGoggles() { return m_bWearingGoggles; };
-    void SetWearingGoggles(bool bWearingGoggles) { m_bWearingGoggles = bWearingGoggles; };
+    bool IsWearingGoggles() const noexcept { return m_bWearingGoggles; };
+    void SetWearingGoggles(bool bWearingGoggles) noexcept { m_bWearingGoggles = bWearingGoggles; };
 
-    bool IsOnFire() { return m_bIsOnFire; }
-    void SetOnFire(bool bOnFire) { m_bIsOnFire = bOnFire; }
+    bool IsOnFire() const noexcept { return m_bIsOnFire; }
+    void SetOnFire(bool bOnFire) noexcept { m_bIsOnFire = bOnFire; }
 
-    CWeapon*       GetWeapon(unsigned char ucSlot = 0xFF);
-    unsigned char  GetWeaponSlot() { return m_ucWeaponSlot; }
-    void           SetWeaponSlot(unsigned char ucSlot);
-    unsigned char  GetCurrentWeaponState() { return m_ucCurrentWeaponState; };
-    void           SetCurrentWeaponState(unsigned char ucWeaponState) { m_ucCurrentWeaponState = ucWeaponState; };
-    unsigned char  GetWeaponType(unsigned char ucSlot = 0xFF);
-    void           SetWeaponType(unsigned char ucType, unsigned char ucSlot = 0xFF);
-    unsigned short GetWeaponAmmoInClip(unsigned char ucSlot = 0xFF);
-    void           SetWeaponAmmoInClip(unsigned short uscAmmoInClip, unsigned char ucSlot = 0xFF);
-    unsigned short GetWeaponTotalAmmo(unsigned char ucSlot = 0xFF);
-    void           SetWeaponTotalAmmo(unsigned short usTotalAmmo, unsigned char ucSlot = 0xFF);
-    bool           HasWeaponType(unsigned char ucWeaponType);
+    CWeapon*      GetWeapon(std::uint8_t ucSlot = 0xFF) const noexcept;
+    std::uint8_t  GetWeaponSlot() const noexcept { return m_ucWeaponSlot; }
+    void          SetWeaponSlot(std::uint8_t ucSlot) noexcept;
+    std::uint8_t  GetCurrentWeaponState() const noexcept { return m_ucCurrentWeaponState; };
+    void          SetCurrentWeaponState(std::uint8_t ucWeaponState) noexcept { m_ucCurrentWeaponState = ucWeaponState; };
+    std::uint8_t  GetWeaponType(std::uint8_t ucSlot = 0xFF) const noexcept;
+    void          SetWeaponType(std::uint8_t ucType, std::uint8_t ucSlot = 0xFF) noexcept;
+    std::uint16_t GetWeaponAmmoInClip(std::uint8_t ucSlot = 0xFF) const noexcept;
+    void          SetWeaponAmmoInClip(std::uint16_t uscAmmoInClip, std::uint8_t ucSlot = 0xFF) noexcept;
+    std::uint16_t GetWeaponTotalAmmo(std::uint8_t ucSlot = 0xFF) const noexcept;
+    void          SetWeaponTotalAmmo(std::uint16_t usTotalAmmo, std::uint8_t ucSlot = 0xFF) noexcept;
+    bool          HasWeaponType(std::uint8_t ucWeaponType) const noexcept;
 
-    float GetMaxHealth();
-    float GetHealth() { return m_fHealth; }
-    void  SetHealth(float fHealth) { m_fHealth = fHealth; }
-    float GetArmor() { return m_fArmor; }
-    void  SetArmor(float fArmor) { m_fArmor = fArmor; }
+    float GetMaxHealth() const noexcept;
+    float GetHealth() const noexcept { return m_fHealth; }
+    void  SetHealth(float fHealth) noexcept { m_fHealth = fHealth; }
+    float GetArmor() const noexcept { return m_fArmor; }
+    void  SetArmor(float fArmor) noexcept { m_fArmor = fArmor; }
 
-    float GetPlayerStat(unsigned short usStat) { return (usStat < NUM_PLAYER_STATS) ? m_fStats[usStat] : 0; }
-    void  SetPlayerStat(unsigned short usStat, float fValue)
+    float GetPlayerStat(std::uint16_t usStat) const noexcept {
+        return (usStat < NUM_PLAYER_STATS) ? m_fStats[usStat] : 0;
+    }
+    void  SetPlayerStat(std::uint16_t usStat, float fValue) noexcept
     {
-        if (usStat < NUM_PLAYER_STATS)
-            m_fStats[usStat] = fValue;
+        if (usStat >= NUM_PLAYER_STATS)
+            return;
+        m_fStats[usStat] = fValue;
     }
 
-    CPlayerClothes* GetClothes() { return m_pClothes; }
+    CPlayerClothes* GetClothes() const noexcept { return m_pClothes; }
 
-    static const char* GetBodyPartName(unsigned char ucID);
+    static const char* GetBodyPartName(std::uint8_t ucID);
 
-    bool HasJetPack() { return m_bHasJetPack; }
-    void SetHasJetPack(bool bHasJetPack) { m_bHasJetPack = bHasJetPack; }
+    bool HasJetPack() const noexcept { return m_bHasJetPack; }
+    void SetHasJetPack(bool bHasJetPack) noexcept { m_bHasJetPack = bHasJetPack; }
 
-    bool IsInWater() { return m_bInWater; }
-    void SetInWater(bool bInWater) { m_bInWater = bInWater; }
+    bool IsInWater() const noexcept { return m_bInWater; }
+    void SetInWater(bool bInWater) noexcept { m_bInWater = bInWater; }
 
-    bool IsOnGround() { return m_bOnGround; }
-    void SetOnGround(bool bOnGround) { m_bOnGround = bOnGround; }
+    bool IsOnGround() const noexcept { return m_bOnGround; }
+    void SetOnGround(bool bOnGround) noexcept { m_bOnGround = bOnGround; }
 
-    unsigned char GetAlpha() { return m_ucAlpha; }
-    void          SetAlpha(unsigned char ucAlpha) { m_ucAlpha = ucAlpha; }
+    std::uint8_t GetAlpha() const noexcept { return m_ucAlpha; }
+    void         SetAlpha(std::uint8_t ucAlpha) noexcept { m_ucAlpha = ucAlpha; }
 
-    CPlayerTasks* GetTasks() { return m_pTasks; }
+    CPlayerTasks* GetTasks() const noexcept { return m_pTasks; }
 
-    CElement* GetContactElement() { return m_pContactElement; }
-    void      SetContactElement(CElement* pElement);
+    CElement* GetContactElement() const noexcept { return m_pContactElement; }
+    void      SetContactElement(CElement* pElement) noexcept;
 
-    void GetContactPosition(CVector& vecPosition) { vecPosition = m_vecContactPosition; }
-    void SetContactPosition(CVector& vecPosition) { m_vecContactPosition = vecPosition; }
+    void GetContactPosition(CVector& vecPosition) const noexcept { vecPosition = m_vecContactPosition; }
+    void SetContactPosition(CVector& vecPosition) noexcept { m_vecContactPosition = vecPosition; }
 
-    bool IsDead() { return m_bIsDead; };
-    void SetIsDead(bool bDead);
+    bool IsDead() const noexcept { return m_bIsDead; };
+    void SetIsDead(bool bDead) noexcept;
 
-    bool IsSpawned() { return m_bSpawned; }
-    void SetSpawned(bool bSpawned) { m_bSpawned = bSpawned; }
+    bool IsSpawned() const noexcept { return m_bSpawned; }
+    void SetSpawned(bool bSpawned) noexcept { m_bSpawned = bSpawned; }
 
-    float GetRotation() { return m_fRotation; }
-    void  SetRotation(float fRotation) { m_fRotation = fRotation; }
+    float GetRotation() const noexcept { return m_fRotation; }
+    void  SetRotation(float fRotation) noexcept { m_fRotation = fRotation; }
 
-    void GetRotation(CVector& vecRotation);
-    void GetMatrix(CMatrix& matrix);
-    void SetMatrix(const CMatrix& matrix);
+    void GetRotation(CVector& vecRotation) const noexcept;
+    void GetMatrix(CMatrix& matrix) const noexcept;
+    void SetMatrix(const CMatrix& matrix) noexcept;
 
-    CElement* GetTargetedElement() { return m_pTargetedEntity; }
-    void      SetTargetedElement(CElement* pEntity) { m_pTargetedEntity = pEntity; }
+    CElement* GetTargetedElement() const noexcept { return m_pTargetedEntity; }
+    void      SetTargetedElement(CElement* pEntity) noexcept { m_pTargetedEntity = pEntity; }
 
-    unsigned char GetFightingStyle() { return m_ucFightingStyle; }
-    void          SetFightingStyle(unsigned char ucStyle) { m_ucFightingStyle = ucStyle; }
+    std::uint8_t GetFightingStyle() const noexcept { return m_ucFightingStyle; }
+    void         SetFightingStyle(std::uint8_t ucStyle) noexcept { m_ucFightingStyle = ucStyle; }
 
-    unsigned char GetMoveAnim() { return static_cast<unsigned char>(m_iMoveAnim); }
-    void          SetMoveAnim(int iMoveAnim) { m_iMoveAnim = iMoveAnim; }
+    std::uint8_t GetMoveAnim() const noexcept { return static_cast<std::uint8_t>(m_iMoveAnim); }
+    void         SetMoveAnim(int iMoveAnim) noexcept { m_iMoveAnim = iMoveAnim; }
 
-    float GetGravity() { return m_fGravity; }
-    void  SetGravity(float fGravity) { m_fGravity = fGravity; }
+    float GetGravity() const noexcept { return m_fGravity; }
+    void  SetGravity(float fGravity) noexcept { m_fGravity = fGravity; }
 
-    CVehicle*    GetOccupiedVehicle() { return m_pVehicle; };
-    unsigned int GetOccupiedVehicleSeat() { return m_uiVehicleSeat; };
-    CVehicle*    SetOccupiedVehicle(CVehicle* pVehicle, unsigned int uiSeat);
+    CVehicle*     GetOccupiedVehicle() const noexcept { return m_pVehicle; };
+    std::uint32_t GetOccupiedVehicleSeat() const noexcept { return m_uiVehicleSeat; };
+    CVehicle*     SetOccupiedVehicle(CVehicle* pVehicle, std::uint32_t uiSeat) noexcept;
 
-    unsigned int GetVehicleAction() { return m_uiVehicleAction; };
-    void         SetVehicleAction(unsigned int uiAction);
+    std::uint32_t GetVehicleAction() const noexcept { return m_uiVehicleAction; };
+    void          SetVehicleAction(std::uint32_t uiAction) noexcept;
 
-    bool IsAttachToable();
+    bool IsAttachToable() const noexcept;
 
-    void GetVelocity(CVector& vecVelocity) { vecVelocity = m_vecVelocity; };
-    void SetVelocity(const CVector& vecVelocity) { m_vecVelocity = vecVelocity; };
+    CVector GetVelocity() const noexcept { return m_vecVelocity; };
+    void GetVelocity(CVector& vecVelocity) const noexcept { vecVelocity = m_vecVelocity; };
+    void SetVelocity(const CVector& vecVelocity) noexcept { m_vecVelocity = vecVelocity; };
 
-    bool IsDoingGangDriveby() { return m_bDoingGangDriveby; }
-    void SetDoingGangDriveby(bool bDriveby) { m_bDoingGangDriveby = bDriveby; }
+    bool IsDoingGangDriveby() const noexcept { return m_bDoingGangDriveby; }
+    void SetDoingGangDriveby(bool bDriveby) noexcept { m_bDoingGangDriveby = bDriveby; }
 
-    bool IsHeadless() { return m_bHeadless; };
-    void SetHeadless(bool bHeadless) { m_bHeadless = bHeadless; };
+    bool IsHeadless() const noexcept { return m_bHeadless; };
+    void SetHeadless(bool bHeadless) noexcept { m_bHeadless = bHeadless; };
 
-    bool IsFrozen() { return m_bFrozen; };
-    void SetFrozen(bool bFrozen) { m_bFrozen = bFrozen; };
+    bool IsFrozen() const noexcept { return m_bFrozen; };
+    void SetFrozen(bool bFrozen) noexcept { m_bFrozen = bFrozen; };
 
-    class CPlayer* GetSyncer() { return m_pSyncer; };
-    void           SetSyncer(class CPlayer* pPlayer);
+    CPlayer* GetSyncer() const noexcept { return m_pSyncer; };
+    void     SetSyncer(CPlayer* pPlayer);
 
-    bool     IsSyncable() { return m_bSyncable; };
-    void     SetSyncable(bool bSynced) { m_bSyncable = bSynced; };
+    bool     IsSyncable() const noexcept { return m_bSyncable; };
+    void     SetSyncable(bool bSynced) noexcept { m_bSyncable = bSynced; };
     CPlayer* m_pSyncer;
 
-    CVehicle* GetJackingVehicle() { return m_pJackingVehicle; }
-    void      SetJackingVehicle(CVehicle* pVehicle);
+    CVehicle* GetJackingVehicle() noexcept { return m_pJackingVehicle; }
+    void      SetJackingVehicle(CVehicle* pVehicle) noexcept;
 
-    bool IsStealthAiming() { return m_bStealthAiming; }
-    void SetStealthAiming(bool bAiming) { m_bStealthAiming = bAiming; }
+    bool IsStealthAiming() const noexcept { return m_bStealthAiming; }
+    void SetStealthAiming(bool bAiming) noexcept { m_bStealthAiming = bAiming; }
 
-    bool GetCollisionEnabled() { return m_bCollisionsEnabled; }
-    void SetCollisionEnabled(bool bCollisionEnabled) { m_bCollisionsEnabled = bCollisionEnabled; }
+    bool GetCollisionEnabled() const noexcept { return m_bCollisionsEnabled; }
+    void SetCollisionEnabled(bool bCollisionEnabled) noexcept { m_bCollisionsEnabled = bCollisionEnabled; }
 
-    long long GetLastFarSyncTick() { return m_llLastFarSyncTick; }
-    void      SetLastFarSyncTick(long long llLastSyncTick) { m_llLastFarSyncTick = llLastSyncTick; }
+    std::int64_t GetLastFarSyncTick() const noexcept { return m_llLastFarSyncTick; }
+    void         SetLastFarSyncTick(std::int64_t llLastSyncTick) noexcept { m_llLastFarSyncTick = llLastSyncTick; }
 
-    void                                  ClearNearPlayersList() { m_nearPlayersList.clear(); }
-    void                                  AddPlayerToNearList(CPlayer* pPlayer) { m_nearPlayersList.push_back(pPlayer); }
-    bool                                  IsNearPlayersListEmpty() { return m_nearPlayersList.empty(); }
-    std::vector<CPlayer*>::const_iterator NearPlayersIterBegin() { return m_nearPlayersList.begin(); }
-    std::vector<CPlayer*>::const_iterator NearPlayersIterEnd() { return m_nearPlayersList.end(); }
+    void ClearNearPlayersList() noexcept { m_nearPlayersList.clear(); }
+    void AddPlayerToNearList(CPlayer* pPlayer) noexcept { m_nearPlayersList.push_back(pPlayer); }
+    bool IsNearPlayersListEmpty() const noexcept { return m_nearPlayersList.empty(); }
+
+    std::vector<CPlayer*>& GetNearPlayers() noexcept { return m_nearPlayersList; }
+    const std::vector<CPlayer*>& GetNearPlayers() const noexcept { return m_nearPlayersList; }
 
 protected:
     bool ReadSpecialData(const int iLine) override;
 
 protected:
-    unsigned short                       m_usModel;
+    std::uint16_t                       m_usModel;
     CMatrix                              m_Matrix;
     bool                                 m_bDucked;
     bool                                 m_bIsChoking;
@@ -298,16 +296,16 @@ protected:
     bool                                 m_bIsPlayer;
     CPlayerTasks*                        m_pTasks;
     SFixedArray<CWeapon, WEAPON_SLOTS>   m_Weapons;
-    unsigned char                        m_ucWeaponSlot;
-    unsigned char                        m_ucCurrentWeaponState;
-    unsigned char                        m_ucAlpha;
+    std::uint8_t                        m_ucWeaponSlot;
+    std::uint8_t                        m_ucCurrentWeaponState;
+    std::uint8_t                        m_ucAlpha;
     CElement*                            m_pContactElement;
     CVector                              m_vecContactPosition;
     bool                                 m_bIsDead;
     float                                m_fRotation;
     bool                                 m_bSpawned;
     CElement*                            m_pTargetedEntity;
-    unsigned char                        m_ucFightingStyle;
+    std::uint8_t                        m_ucFightingStyle;
     int                                  m_iMoveAnim;
     float                                m_fGravity;
     CVector                              m_vecVelocity;
@@ -318,13 +316,13 @@ protected:
     CVehicle*                            m_pJackingVehicle;
 
     CVehicle*    m_pVehicle;
-    unsigned int m_uiVehicleSeat;
-    unsigned int m_uiVehicleAction;
+    std::uint32_t m_uiVehicleSeat;
+    std::uint32_t m_uiVehicleAction;
 
     bool m_bSyncable;
     bool m_bCollisionsEnabled;
 
-    long long             m_llLastFarSyncTick = 0;
+    std::int64_t             m_llLastFarSyncTick = 0;
     std::vector<CPlayer*> m_nearPlayersList;
 
 private:

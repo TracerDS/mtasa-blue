@@ -20,9 +20,9 @@
 #define DB_SQLITE_QUEUE_NAME_DEFAULT  "sqlite"            // Note: MySql default queue name is the host string
 
 class CDatabaseJobQueue;
-typedef uint            SDbConnectionId;
-typedef intptr_t        SDbJobId;
-typedef SDbConnectionId SConnectionHandle;
+using SDbConnectionId = std::uint32_t;
+using SDbJobId = intptr_t;
+using SConnectionHandle = SDbConnectionId;
 
 namespace EJobResult
 {
@@ -74,7 +74,7 @@ using EJobLogLevel::EJobLogLevelType;
 using EJobResult::EJobResultType;
 using EJobStage::EJobStageType;
 
-typedef void (*PFN_DBRESULT)(CDbJobData* pJobData, void* pContext);
+using PFN_DBRESULT = void (*)(CDbJobData* pJobData, void* pContext);
 
 //
 // Specialized map for the options string
@@ -82,7 +82,7 @@ typedef void (*PFN_DBRESULT)(CDbJobData* pJobData, void* pContext);
 class CDbOptionsMap : public CArgMap
 {
 public:
-    CDbOptionsMap() : CArgMap("=", ";") {}
+    CDbOptionsMap() noexcept : CArgMap("=", ";") {}
 };
 
 //
@@ -95,13 +95,13 @@ public:
 
     CDbJobData();
     ~CDbJobData();
-    SDbJobId           GetId() const { return id; }
-    bool               SetCallback(PFN_DBRESULT pfnDbResult, void* pContext);
-    bool               HasCallback();
-    void               ProcessCallback();
-    void               SetLuaDebugInfo(const SLuaDebugInfo& luaDebugInfo) { m_LuaDebugInfo = luaDebugInfo; }
-    CDatabaseJobQueue* GetQueue() { return command.pJobQueue; }
-    SString            GetCommandStringForLog();
+    SDbJobId           GetId() const noexcept { return id; }
+    bool               SetCallback(PFN_DBRESULT pfnDbResult, void* pContext) noexcept;
+    bool               HasCallback() const noexcept;
+    void               ProcessCallback() noexcept;
+    void               SetLuaDebugInfo(const SLuaDebugInfo& luaDebugInfo) noexcept { m_LuaDebugInfo = luaDebugInfo; }
+    CDatabaseJobQueue* GetQueue() noexcept { return command.pJobQueue; }
+    SString            GetCommandStringForLog() const noexcept;
 
     EJobStageType stage;
     SDbJobId      id;
@@ -118,7 +118,7 @@ public:
     struct
     {
         EJobResultType  status;
-        uint            uiErrorCode;
+        std::uint32_t            uiErrorCode;
         SString         strReason;
         bool            bErrorSuppressed;
         CRegistryResult registryResult;
@@ -162,7 +162,7 @@ public:
     virtual CDbJobData*       Execf(SConnectionHandle hConnection, const char* szQuery, ...) = 0;
     virtual CDbJobData*       QueryStart(SConnectionHandle hConnection, const SString& strQuery, CLuaArguments* pArgs = nullptr) = 0;
     virtual CDbJobData*       QueryStartf(SConnectionHandle hConnection, const char* szQuery, ...) = 0;
-    virtual bool              QueryPoll(CDbJobData* pJobData, uint ulTimeout) = 0;
+    virtual bool              QueryPoll(CDbJobData* pJobData, std::uint32_t ulTimeout) = 0;
     virtual bool              QueryFree(CDbJobData* pJobData) = 0;
     virtual CDbJobData*       GetQueryFromId(SDbJobId id) = 0;
     virtual const SString&    GetLastErrorMessage() = 0;
@@ -187,7 +187,8 @@ CDatabaseManager* NewDatabaseManager();
 class CDatabaseConnectionElement final : public CElement
 {
 public:
-    CDatabaseConnectionElement(CElement* pParent, SConnectionHandle connection) : CElement(pParent), m_Connection(connection)
+    CDatabaseConnectionElement(CElement* pParent, SConnectionHandle connection) noexcept
+        : CElement(pParent), m_Connection(connection)
     {
         m_iType = CElement::DATABASE_CONNECTION;
         SetTypeName("db-connection");
@@ -199,10 +200,10 @@ public:
     virtual void Unlink();
 
     // CDatabaseConnectionElement
-    SConnectionHandle GetConnectionHandle() { return m_Connection; }
+    SConnectionHandle GetConnectionHandle() noexcept { return m_Connection; }
 
 protected:
-    bool ReadSpecialData(const int iLine) override { return false; }
+    bool ReadSpecialData(const int iLine) noexcept override { return false; }
 
 protected:
     SConnectionHandle m_Connection;

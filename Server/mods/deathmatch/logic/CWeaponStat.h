@@ -63,6 +63,7 @@ struct sWeaponStats
     BYTE m_defaultCombo;                // base combo for this melee weapon
     BYTE m_nCombosAvailable;            // how many further combos are available
 };
+
 class CWeaponStat
 {
 public:
@@ -84,253 +85,253 @@ public:
     void SetFlagBits(DWORD flagBits);
     void ClearFlagBits(DWORD flagBits);
     // For initialization only
-    void SetFlags(int iFlags)
+    void SetFlags(int iFlags) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nFlags = iFlags;
     }
-    bool IsFlagSet(DWORD flag) { return ((tWeaponStats.m_nFlags & flag) > 0 ? true : false); }
-    int  GetFlags() { return tWeaponStats.m_nFlags; }
+    bool IsFlagSet(DWORD flag) const noexcept { return ((tWeaponStats.m_nFlags & flag) > 0 ? true : false); }
+    int  GetFlags() noexcept { return tWeaponStats.m_nFlags; }
 
-    eWeaponModel GetModel() { return (eWeaponModel)tWeaponStats.m_modelId; }
-    void         SetModel(int iModel)
+    eWeaponModel GetModel() const noexcept { return (eWeaponModel)tWeaponStats.m_modelId; }
+    void         SetModel(int iModel) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_modelId = (int)iModel;
     }
 
-    eWeaponModel GetModel2() { return (eWeaponModel)tWeaponStats.m_modelId2; }
-    void         SetModel2(int iModel)
+    eWeaponModel GetModel2() const noexcept { return (eWeaponModel)tWeaponStats.m_modelId2; }
+    void         SetModel2(int iModel) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_modelId2 = (int)iModel;
     }
 
-    sWeaponStats* GetInterface() { return &tWeaponStats; };
+    sWeaponStats* GetInterface() noexcept { return &tWeaponStats; }
 
-    float GetWeaponRange() { return tWeaponStats.m_fWeaponRange; };
-    void  SetWeaponRange(float fRange)
+    float GetWeaponRange() const noexcept { return tWeaponStats.m_fWeaponRange; }
+    void  SetWeaponRange(float fRange) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fWeaponRange = fRange;
-    };
+    }
 
-    float GetTargetRange() { return tWeaponStats.m_fTargetRange; };
-    void  SetTargetRange(float fRange)
+    float GetTargetRange() const noexcept { return tWeaponStats.m_fTargetRange; }
+    void  SetTargetRange(float fRange) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fTargetRange = fRange;
-    };
+    }
 
-    CVector* GetFireOffset() { return &tWeaponStats.m_vecFireOffset; };
-    void     SetFireOffset(CVector* vecFireOffset)
+    CVector* GetFireOffset() noexcept { return &tWeaponStats.m_vecFireOffset; }
+    void     SetFireOffset(CVector* vecFireOffset) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_vecFireOffset = *vecFireOffset;
-    };
+    }
 
-    short GetDamagePerHit() { return tWeaponStats.m_nDamage; };
-    void  SetDamagePerHit(short sDamagePerHit)
+    short GetDamagePerHit() const noexcept { return tWeaponStats.m_nDamage; }
+    void  SetDamagePerHit(short sDamagePerHit) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nDamage = sDamagePerHit;
-    };
+    }
 
-    float GetAccuracy() { return tWeaponStats.m_fAccuracy; };
-    void  SetAccuracy(float fAccuracy)
+    float GetAccuracy() const noexcept { return tWeaponStats.m_fAccuracy; }
+    void  SetAccuracy(float fAccuracy) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fAccuracy = fAccuracy;
-    };
+    }
 
-    short GetMaximumClipAmmo() { return tWeaponStats.m_nAmmo; };
-    void  SetMaximumClipAmmo(short sAccuracy)
+    short GetMaximumClipAmmo() const noexcept { return tWeaponStats.m_nAmmo; }
+    void  SetMaximumClipAmmo(short sAccuracy) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nAmmo = sAccuracy;
-    };
+    }
 
-    float GetMoveSpeed() { return tWeaponStats.m_fMoveSpeed; };
-    void  SetMoveSpeed(float fMoveSpeed)
+    float GetMoveSpeed() const noexcept { return tWeaponStats.m_fMoveSpeed; }
+    void  SetMoveSpeed(float fMoveSpeed) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fMoveSpeed = fMoveSpeed;
-    };
+    }
 
     // projectile/areaeffect only
-    float GetFiringSpeed() { return tWeaponStats.m_fSpeed; };
-    void  SetFiringSpeed(float fFiringSpeed)
+    float GetFiringSpeed() const noexcept { return tWeaponStats.m_fSpeed; }
+    void  SetFiringSpeed(float fFiringSpeed) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fSpeed = fFiringSpeed;
-    };
+    }
 
     // area effect only
-    float GetRadius() { return tWeaponStats.m_fRadius; };
-    void  SetRadius(float fRadius)
+    float GetRadius() const noexcept { return tWeaponStats.m_fRadius; }
+    void  SetRadius(float fRadius) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fRadius = fRadius;
-    };
+    }
 
-    float GetLifeSpan() { return tWeaponStats.m_fLifeSpan; };
-    void  SetLifeSpan(float fLifeSpan)
+    float GetLifeSpan() const noexcept { return tWeaponStats.m_fLifeSpan; }
+    void  SetLifeSpan(float fLifeSpan) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fLifeSpan = fLifeSpan;
-    };
+    }
 
-    float GetSpread() { return tWeaponStats.m_fSpread; };
-    void  SetSpread(float fSpread)
+    float GetSpread() const noexcept { return tWeaponStats.m_fSpread; }
+    void  SetSpread(float fSpread) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fSpread = fSpread;
-    };
+    }
 
-    float GetAnimBreakoutTime() { return tWeaponStats.m_animBreakoutTime; };
-    void  SetAnimBreakoutTime(float fBreakoutTime)
+    float GetAnimBreakoutTime() const noexcept { return tWeaponStats.m_animBreakoutTime; }
+    void  SetAnimBreakoutTime(float fBreakoutTime) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_animBreakoutTime = fBreakoutTime;
-    };
+    }
 
-    eWeaponSlot GetSlot() { return (eWeaponSlot)tWeaponStats.m_nWeaponSlot; };
-    void        SetSlot(eWeaponSlot dwSlot)
+    eWeaponSlot GetSlot() const noexcept { return (eWeaponSlot)tWeaponStats.m_nWeaponSlot; }
+    void        SetSlot(eWeaponSlot dwSlot) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nWeaponSlot = (eWeaponSlot)dwSlot;
-    };
+    }
 
-    eWeaponSkill GetSkill() { return tWeaponStats.m_SkillLevel; }
-    void         SetSkill(eWeaponSkill weaponSkill)
+    eWeaponSkill GetSkill() const noexcept { return tWeaponStats.m_SkillLevel; }
+    void         SetSkill(eWeaponSkill weaponSkill) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_SkillLevel = weaponSkill;
     }
 
-    float GetRequiredStatLevel() { return static_cast<float>(tWeaponStats.m_nReqStatLevel); }
-    void  SetRequiredStatLevel(float fStatLevel)
+    float GetRequiredStatLevel() const noexcept { return static_cast<float>(tWeaponStats.m_nReqStatLevel); }
+    void  SetRequiredStatLevel(float fStatLevel) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nReqStatLevel = static_cast<int>(fStatLevel);
     }
-    void SetRequiredStatLevel(int iStatLevel)
+    void SetRequiredStatLevel(int iStatLevel) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nReqStatLevel = iStatLevel;
     }
 
-    DWORD GetAnimGroup() { return tWeaponStats.m_animGroup; }
-    void  SetAnimGroup(DWORD dwAnimGroup)
+    DWORD GetAnimGroup() const noexcept { return tWeaponStats.m_animGroup; }
+    void  SetAnimGroup(DWORD dwAnimGroup) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_animGroup = dwAnimGroup;
     }
 
-    eFireType GetFireType() { return tWeaponStats.m_eFireType; }
-    void      SetFireType(eFireType type)
+    eFireType GetFireType() const noexcept { return tWeaponStats.m_eFireType; }
+    void      SetFireType(eFireType type) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_eFireType = type;
     }
 
     // Floats
-    float GetWeaponAnimLoopStart() { return tWeaponStats.m_animLoopStart; }
-    void  SetWeaponAnimLoopStart(float animLoopStart)
+    float GetWeaponAnimLoopStart() const noexcept { return tWeaponStats.m_animLoopStart; }
+    void  SetWeaponAnimLoopStart(float animLoopStart) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_animLoopStart = animLoopStart;
     }
 
-    float GetWeaponAnimLoopStop() { return tWeaponStats.m_animLoopEnd; }
-    void  SetWeaponAnimLoopStop(float animLoopEnd)
+    float GetWeaponAnimLoopStop() const noexcept { return tWeaponStats.m_animLoopEnd; }
+    void  SetWeaponAnimLoopStop(float animLoopEnd) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_animLoopEnd = animLoopEnd;
     }
 
-    float GetWeaponAnimLoopFireTime() { return tWeaponStats.m_animFireTime; }
-    void  SetWeaponAnimLoopFireTime(float animFireTime)
+    float GetWeaponAnimLoopFireTime() const noexcept { return tWeaponStats.m_animFireTime; }
+    void  SetWeaponAnimLoopFireTime(float animFireTime) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_animFireTime = animFireTime;
     }
 
-    float GetWeaponAnim2LoopStart() { return tWeaponStats.m_anim2LoopStart; }
-    void  SetWeaponAnim2LoopStart(float anim2LoopStart)
+    float GetWeaponAnim2LoopStart() const noexcept { return tWeaponStats.m_anim2LoopStart; }
+    void  SetWeaponAnim2LoopStart(float anim2LoopStart) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_anim2LoopStart = anim2LoopStart;
     }
 
-    float GetWeaponAnim2LoopStop() { return tWeaponStats.m_anim2LoopEnd; }
-    void  SetWeaponAnim2LoopStop(float anim2LoopEnd)
+    float GetWeaponAnim2LoopStop() const noexcept { return tWeaponStats.m_anim2LoopEnd; }
+    void  SetWeaponAnim2LoopStop(float anim2LoopEnd) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_anim2LoopEnd = anim2LoopEnd;
     }
 
-    float GetWeaponAnim2LoopFireTime() { return tWeaponStats.m_anim2FireTime; }
-    void  SetWeaponAnim2LoopFireTime(float anim2FireTime)
+    float GetWeaponAnim2LoopFireTime() const noexcept { return tWeaponStats.m_anim2FireTime; }
+    void  SetWeaponAnim2LoopFireTime(float anim2FireTime) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_anim2FireTime = anim2FireTime;
     }
 
-    float GetWeaponAnimBreakoutTime() { return tWeaponStats.m_animBreakoutTime; }
-    void  SetWeaponAnimBreakoutTime(float animBreakoutTime)
+    float GetWeaponAnimBreakoutTime() const noexcept { return tWeaponStats.m_animBreakoutTime; }
+    void  SetWeaponAnimBreakoutTime(float animBreakoutTime) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_animBreakoutTime = animBreakoutTime;
     }
 
-    float GetWeaponSpeed() { return tWeaponStats.m_fSpeed; }
-    void  SetWeaponSpeed(float fSpeed)
+    float GetWeaponSpeed() const noexcept { return tWeaponStats.m_fSpeed; }
+    void  SetWeaponSpeed(float fSpeed) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fSpeed = fSpeed;
     }
 
-    float GetWeaponRadius() { return tWeaponStats.m_fRadius; }
-    void  SetWeaponRadius(float fRadius)
+    float GetWeaponRadius() const noexcept { return tWeaponStats.m_fRadius; }
+    void  SetWeaponRadius(float fRadius) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_fRadius = fRadius;
     }
 
     // Ints
-    short GetAimOffsetIndex() { return tWeaponStats.m_nAimOffsetIndex; }
-    void  SetAimOffsetIndex(short sIndex)
+    short GetAimOffsetIndex() const noexcept { return tWeaponStats.m_nAimOffsetIndex; }
+    void  SetAimOffsetIndex(short sIndex) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nAimOffsetIndex = sIndex;
     }
 
-    BYTE GetDefaultCombo() { return tWeaponStats.m_defaultCombo; }
-    void SetDefaultCombo(BYTE defaultCombo)
+    BYTE GetDefaultCombo() const noexcept { return tWeaponStats.m_defaultCombo; }
+    void SetDefaultCombo(BYTE defaultCombo) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_defaultCombo = defaultCombo;
     }
 
-    BYTE GetCombosAvailable() { return tWeaponStats.m_nCombosAvailable; }
-    void SetCombosAvailable(BYTE nCombosAvailable)
+    BYTE GetCombosAvailable() const noexcept { return tWeaponStats.m_nCombosAvailable; }
+    void SetCombosAvailable(BYTE nCombosAvailable) noexcept
     {
         ms_uiAllWeaponStatsRevision++;
         tWeaponStats.m_nCombosAvailable = nCombosAvailable;
     }
 
-    void SetChanged(bool bChanged) { m_bChanged = bChanged; }
-    bool HasChanged() { return m_bChanged; }
+    void SetChanged(bool bChanged) noexcept { m_bChanged = bChanged; }
+    bool HasChanged() const noexcept { return m_bChanged; }
 
-    static uint GetAllWeaponStatsRevision() { return ms_uiAllWeaponStatsRevision; }
+    static std::uint32_t GetAllWeaponStatsRevision() noexcept { return ms_uiAllWeaponStatsRevision; }
 
 private:
     void HandleFlagsValueChange(DWORD newValue);
 
-    eWeaponType  weaponType;
-    eWeaponSkill skillLevel;
-    sWeaponStats tWeaponStats;
-    bool         m_bChanged;
-    static uint  ms_uiAllWeaponStatsRevision;
+    eWeaponType          weaponType;
+    eWeaponSkill         skillLevel;
+    sWeaponStats         tWeaponStats;
+    bool                 m_bChanged;
+    static std::uint32_t ms_uiAllWeaponStatsRevision;
 };

@@ -11,7 +11,6 @@
 #pragma once
 #include <map>
 #include <vector>
-#include "SharedUtil.IntTypes.h"
 
 ////////////////////////////////////////////////////////////////
 //
@@ -37,9 +36,9 @@ template <class T>
 class CFastList
 {
 public:
-    typedef typename std::map<uint, T>  MapType;
-    typedef typename std::pair<uint, T> MapTypePair;
-    typedef typename std::map<T, uint>  InfoType;
+    typedef typename std::map<std::uint32_t, T>  MapType;
+    typedef typename std::pair<std::uint32_t, T> MapTypePair;
+    typedef typename std::map<T, std::uint32_t>  InfoType;
     enum class EOperation
     {
         PushBack,
@@ -52,9 +51,9 @@ public:
         T          item;
     };
 
-    uint                             uiRevision;                  // Incremented every time the ordered map changes
-    uint                             uiNextFrontIndex;            // Next (decrementing) index to use as a map key for items added to the front
-    uint                             uiNextBackIndex;             // Next (incrementing) index to use as a map key for items added to the back
+    std::uint32_t                             uiRevision;                  // Incremented every time the ordered map changes
+    std::uint32_t                             uiNextFrontIndex;            // Next (decrementing) index to use as a map key for items added to the front
+    std::uint32_t                             uiNextBackIndex;             // Next (incrementing) index to use as a map key for items added to the back
     MapType                          orderedMap;                  // Ordered map of items
     InfoType                         infoMap;                     // info for each item
     bool                             m_bSuspendingModifyOperations;
@@ -137,7 +136,7 @@ public:
             m_SuspendedOperationList.push_back({EOperation::Remove, item});
             return;
         }
-        if (uint uiIndex = GetItemIndex(item))
+        if (std::uint32_t uiIndex = GetItemIndex(item))
         {
             typename MapType::iterator it = orderedMap.find(uiIndex);
             dassert(it != orderedMap.end());
@@ -148,7 +147,7 @@ public:
         }
     }
 
-    uint GetRevision() const { return uiRevision; }
+    std::uint32_t GetRevision() const { return uiRevision; }
 
     // Queue remove/push_back/push_front operations until ResumeModifyOperations is called
     void SuspendModifyOperations()
@@ -193,7 +192,7 @@ protected:
     }
 
     // Handle storage of the item index
-    uint GetItemIndex(const T& item) const
+    std::uint32_t GetItemIndex(const T& item) const
     {
         typename InfoType::const_iterator it = infoMap.find(item);
         if (it == infoMap.end())
@@ -202,7 +201,7 @@ protected:
     }
 
     // Item must not exist in the infoMap
-    void SetItemIndex(const T& item, uint uiIndex)
+    void SetItemIndex(const T& item, std::uint32_t uiIndex)
     {
         typename InfoType::const_iterator it = infoMap.find(item);
         assert(it == infoMap.end() && uiIndex);

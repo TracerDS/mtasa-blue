@@ -10,7 +10,6 @@
  *****************************************************************************/
 #include "SharedUtil.File.h"
 #include "SharedUtil.Defines.h"
-#include "SharedUtil.IntTypes.h"
 #include "SharedUtil.Misc.h"
 #include "SharedUtil.Buffer.h"
 #include <algorithm>

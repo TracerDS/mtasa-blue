@@ -389,7 +389,7 @@ void    MixedReadResourceString(CScriptArgReader& argStream, CResource*& pOutRes
 bool    StringToBool(const SString& strText);
 void    MinServerReqCheck(CScriptArgReader& argStream, const char* szVersionReq, const char* szReason);
 void    ReadPregFlags(CScriptArgReader& argStream, pcrecpp::RE_Options& pOptions);
-bool    ReadMatrix(lua_State* luaVM, uint uiArgIndex, CMatrix& outMatrix);
+bool    ReadMatrix(lua_State* luaVM, std::uint32_t uiArgIndex, CMatrix& outMatrix);
 
 //
 // Resource access helpers
@@ -411,4 +411,4 @@ void CheckCanAccessOtherResourceFile(CScriptArgReader& argStream, CResource* pTh
 // Other misc helpers
 //
 bool IsWeaponPropertyFlag(eWeaponProperty weaponProperty);
-uint GetWeaponPropertyFlagBit(eWeaponProperty weaponProperty);
+std::uint32_t GetWeaponPropertyFlagBit(eWeaponProperty weaponProperty);

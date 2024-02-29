@@ -19,7 +19,7 @@ class CAccountManager;
 class CDbJobData;
 class CDatabaseManager;
 
-typedef uint SDbConnectionId;
+using SDbConnectionId = std::uint32_t;
 
 #define GUEST_ACCOUNT_NAME          "guest"
 #define HTTP_GUEST_ACCOUNT_NAME     "http_guest"
@@ -32,9 +32,9 @@ typedef uint SDbConnectionId;
 class CMappedAccountList : protected CFastList<CAccount*>
 {
 public:
-    typedef CFastList<CAccount*>                 Super;
-    typedef CFastList<CAccount*>::iterator       iterator;
-    typedef CFastList<CAccount*>::const_iterator const_iterator;
+    using Super = CFastList<CAccount*>;
+    using iterator = CFastList<CAccount*>::iterator;
+    using const_iterator = CFastList<CAccount*>::const_iterator;
 
     // CMappedList functions
     bool     contains(CAccount* item) const { return Super::contains(item); }
@@ -63,7 +63,7 @@ public:
         Super::clear();
     }
 
-    size_t size() const { return Super::size(); }
+    size_t size() const noexcept { return Super::size(); }
 
     // Account functions
     void FindAccountMatches(std::vector<CAccount*>* pOutResults, const SString& strName, bool bCaseSensitive)
@@ -71,34 +71,36 @@ public:
         MultiFind(m_NameAccountMap, strName, pOutResults);
 
         // If case sensitive, then remove non-exact matches
-        if (bCaseSensitive)
+        if (!bCaseSensitive)
+            return;
+
+        for (auto i = 0; i < pOutResults->size(); ++i)
         {
-            for (uint i = 0; i < pOutResults->size(); ++i)
-            {
-                CAccount* pAccount = pOutResults->at(i);
-                if (pAccount->GetName() != strName)
-                {
-                    pOutResults->erase(pOutResults->begin() + i);
-                    i--;
-                }
-            }
+            CAccount* pAccount = pOutResults->at(i);
+            if (pAccount->GetName() == strName)
+                continue;
+
+            pOutResults->erase(pOutResults->begin() + i);
+            i--;
         }
     }
 
     void ChangingName(CAccount* pAccount, const SString& strOldName, const SString& strNewName)
     {
-        if (MapContainsPair(m_NameAccountMap, strOldName, pAccount))
-        {
-            MapRemovePair(m_NameAccountMap, strOldName, pAccount);
-            assert(!MapContainsPair(m_NameAccountMap, strNewName, pAccount));
-            MapInsert(m_NameAccountMap, strNewName, pAccount);
-        }
+        if (!MapContainsPair(m_NameAccountMap, strOldName, pAccount))
+            return;
+
+        MapRemovePair(m_NameAccountMap, strOldName, pAccount);
+        assert(!MapContainsPair(m_NameAccountMap, strNewName, pAccount));
+        MapInsert(m_NameAccountMap, strNewName, pAccount);
     }
 
 protected:
     struct CaseInsensitiveCompare
     {
-        bool operator()(const SString& strLhs, const SString& strRhs) const { return stricmp(strLhs, strRhs) < 0; }
+        bool operator()(const SString& strLhs, const SString& strRhs) const noexcept {
+            return stricmp(strLhs, strRhs) < 0;
+        }
     };
 
     std::multimap<SString, CAccount*, CaseInsensitiveCompare> m_NameAccountMap;
@@ -135,7 +137,7 @@ public:
     bool IntegrityCheck();
 
     CAccount* Get(const char* szName, const char* szPassword = nullptr, bool caseSensitive = true);
-    CAccount* GetAccountFromScriptID(uint uiScriptID);
+    CAccount* GetAccountFromScriptID(std::uint32_t uiScriptID);
     SString   GetActiveCaseVariation(const SString& strName);
 
     bool LogIn(CClient* pClient, CClient* pEchoClient, const std::string& strAccountName, const char* szPassword);

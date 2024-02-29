@@ -37,17 +37,32 @@ project "Deathmatch"
 	}
 
 	vpaths {
-		["Headers/*"] = {"**.h", "../../../Shared/mods/deathmatch/**.h", "../../**.h"},
-		["Sources/*"] = {"**.cpp", "../../../Shared/mods/deathmatch/**.cpp", "../../../Shared/**.cpp", "../../../vendor/**.cpp", "../../**.cpp"},
+		["Headers/*"] = { 
+			"**.h",
+			"**.hpp",
+			"../../../Shared/mods/deathmatch/**.h",
+			"../../../Shared/mods/deathmatch/**.hpp",
+			"../../**.h",
+			"../../**.hpp",
+		},
+		["Sources/*"] = {
+			"**.cpp",
+			"../../../Shared/mods/deathmatch/**.cpp",
+			"../../../Shared/**.cpp",
+			"../../../vendor/**.cpp",
+			"../../**.cpp",
+		},
 		["*"] = "premake5.lua"
 	}
 
 	files {
 		"premake5.lua",
 		"**.h",
+		"**.hpp",
 		"**.cpp",
 		"../../../Shared/mods/deathmatch/logic/**.cpp",
 		"../../../Shared/mods/deathmatch/logic/**.h",
+		"../../../Shared/mods/deathmatch/logic/**.hpp",
 		"../../../Shared/animation/CEasingCurve.cpp",
 		"../../../Shared/animation/CPositionRotationAnimation.cpp",
 		-- Todo: Replace these two by using the CryptoPP functions instead

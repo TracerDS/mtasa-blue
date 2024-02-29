@@ -12,10 +12,10 @@
 
 namespace SharedUtil
 {
-    unsigned char GetTrafficLightStateFromColors(TrafficLight::EColor eColorNS, TrafficLight::EColor eColorEW)
+    std::uint8_t GetTrafficLightStateFromColors(TrafficLight::EColor eColorNS, TrafficLight::EColor eColorEW)
     {
         // Get the state number
-        unsigned char ucState = 0;
+        std::uint8_t ucState = 0;
         switch (eColorEW)
         {
             case TrafficLight::RED:
@@ -91,63 +91,62 @@ namespace SharedUtil
     // Use black for colours that are not used (bandwidth saving)
     void CVehicleColor::SetRGBColors(SColor color1, SColor color2, SColor color3, SColor color4)
     {
-        if (m_RGBColors[0] != color1 || m_RGBColors[1] != color2 || m_RGBColors[2] != color3 || m_RGBColors[3] != color4)
-        {
-            m_RGBColors[0] = color1;
-            m_RGBColors[1] = color2;
-            m_RGBColors[2] = color3;
-            m_RGBColors[3] = color4;
-            InvalidatePaletteColors();
-        }
+        if (m_RGBColors[0] == color1 && m_RGBColors[1] == color2 && m_RGBColors[2] == color3 && m_RGBColors[3] == color4)
+            return;
+            
+        m_RGBColors[0] = color1;
+        m_RGBColors[1] = color2;
+        m_RGBColors[2] = color3;
+        m_RGBColors[3] = color4;
+        InvalidatePaletteColors();
     }
 
-    void CVehicleColor::SetPaletteColors(unsigned char ucColor1, unsigned char ucColor2, unsigned char ucColor3, unsigned char ucColor4)
+    void CVehicleColor::SetPaletteColors(std::uint8_t ucColor1, std::uint8_t ucColor2, std::uint8_t ucColor3, std::uint8_t ucColor4)
     {
-        if (m_ucPaletteColors[0] != ucColor1 || m_ucPaletteColors[1] != ucColor2 || m_ucPaletteColors[2] != ucColor3 || m_ucPaletteColors[3] != ucColor4)
-        {
-            m_ucPaletteColors[0] = ucColor1;
-            m_ucPaletteColors[1] = ucColor2;
-            m_ucPaletteColors[2] = ucColor3;
-            m_ucPaletteColors[3] = ucColor4;
-            InvalidateRGBColors();
-        }
+        if (m_ucPaletteColors[0] == ucColor1 && m_ucPaletteColors[1] == ucColor2 && m_ucPaletteColors[2] == ucColor3 && m_ucPaletteColors[3] == ucColor4)
+            return;
+            
+        m_ucPaletteColors[0] = ucColor1;
+        m_ucPaletteColors[1] = ucColor2;
+        m_ucPaletteColors[2] = ucColor3;
+        m_ucPaletteColors[3] = ucColor4;
+        InvalidateRGBColors();
     }
 
-    void CVehicleColor::SetRGBColor(uint uiSlot, SColor color)
+    void CVehicleColor::SetRGBColor(std::uint32_t uiSlot, SColor color)
     {
         ValidateRGBColors();
-        uiSlot = std::min(uiSlot, static_cast<uint>(NUMELMS(m_RGBColors)));
-        if (m_RGBColors[uiSlot] != color)
-        {
-            m_RGBColors[uiSlot] = color;
-            InvalidatePaletteColors();
-        }
+        uiSlot = std::min(uiSlot, static_cast<std::uint32_t>(NUMELMS(m_RGBColors)));
+        if (m_RGBColors[uiSlot] == color)
+            return;
+            
+        m_RGBColors[uiSlot] = color;
+        InvalidatePaletteColors();
     }
 
-    void CVehicleColor::SetPaletteColor(uint uiSlot, uchar ucColor)
+    void CVehicleColor::SetPaletteColor(std::uint32_t uiSlot, std::uint8_t ucColor)
     {
         ValidatePaletteColors();
-        uiSlot = std::min(uiSlot, static_cast<uint>(NUMELMS(m_ucPaletteColors)));
-        if (m_ucPaletteColors[uiSlot] != ucColor)
-        {
-            m_ucPaletteColors[uiSlot] = ucColor;
-            InvalidateRGBColors();
-        }
+        uiSlot = std::min(uiSlot, static_cast<std::uint32_t>(NUMELMS(m_ucPaletteColors)));
+        if (m_ucPaletteColors[uiSlot] == ucColor)
+            return;
+        m_ucPaletteColors[uiSlot] = ucColor;
+        InvalidateRGBColors();
     }
 
     // Get a slot colour as a palette index
-    uchar CVehicleColor::GetPaletteColor(uint uiSlot)
+    std::uint8_t CVehicleColor::GetPaletteColor(std::uint32_t uiSlot)
     {
         ValidatePaletteColors();
-        uiSlot = std::min(uiSlot, static_cast<uint>(NUMELMS(m_ucPaletteColors)));
+        uiSlot = std::min(uiSlot, static_cast<std::uint32_t>(NUMELMS(m_ucPaletteColors)));
         return m_ucPaletteColors[uiSlot];
     }
 
     // Get a slot colour as an RGB colour
-    SColor CVehicleColor::GetRGBColor(uint uiSlot)
+    SColor CVehicleColor::GetRGBColor(std::uint32_t uiSlot)
     {
         ValidateRGBColors();
-        uiSlot = std::min(uiSlot, static_cast<uint>(NUMELMS(m_RGBColors)));
+        uiSlot = std::min(uiSlot, static_cast<std::uint32_t>(NUMELMS(m_RGBColors)));
         return m_RGBColors[uiSlot];
     }
 
@@ -182,26 +181,26 @@ namespace SharedUtil
     // Ensure switched
     void CVehicleColor::ValidateRGBColors()
     {
-        if (m_bRGBColorsWrong)
-        {
-            m_bRGBColorsWrong = false;
-            for (uint i = 0; i < NUMELMS(m_RGBColors); i++)
-                m_RGBColors[i] = GetRGBFromPaletteIndex(m_ucPaletteColors[i]);
-        }
+        if (!m_bRGBColorsWrong)
+            return;
+            
+        m_bRGBColorsWrong = false;
+        for (std::uint32_t i = 0; i < NUMELMS(m_RGBColors); i++)
+            m_RGBColors[i] = GetRGBFromPaletteIndex(m_ucPaletteColors[i]);
     }
 
     // Ensure switched
     void CVehicleColor::ValidatePaletteColors()
     {
-        if (m_bPaletteColorsWrong)
-        {
-            m_bPaletteColorsWrong = false;
-            for (uint i = 0; i < NUMELMS(m_ucPaletteColors); i++)
-                m_ucPaletteColors[i] = GetPaletteIndexFromRGB(m_RGBColors[i]);
-        }
+        if (!m_bPaletteColorsWrong)
+            return;
+        
+        m_bPaletteColorsWrong = false;
+        for (std::uint32_t i = 0; i < NUMELMS(m_ucPaletteColors); i++)
+            m_ucPaletteColors[i] = GetPaletteIndexFromRGB(m_RGBColors[i]);
     }
 
-    static const uchar paletteColorTable8[] = {
+    static const std::uint8_t paletteColorTable8[] = {
         0x00, 0x00, 0x00, 0xff, 0xf5, 0xf5, 0xf5, 0xff, 0x2a, 0x77, 0xa1, 0xff, 0x84, 0x04, 0x10, 0xff, 0x26, 0x37, 0x39, 0xff, 0x86, 0x44, 0x6e, 0xff, 0xd7,
         0x8e, 0x10, 0xff, 0x4c, 0x75, 0xb7, 0xff, 0xbd, 0xbe, 0xc6, 0xff, 0x5e, 0x70, 0x72, 0xff, 0x46, 0x59, 0x7a, 0xff, 0x65, 0x6a, 0x79, 0xff, 0x5d, 0x7e,
         0x8d, 0xff, 0x58, 0x59, 0x5a, 0xff, 0xd6, 0xda, 0xd6, 0xff, 0x9c, 0xa1, 0xa3, 0xff, 0x33, 0x5f, 0x3f, 0xff, 0x73, 0x0e, 0x1a, 0xff, 0x7b, 0x0a, 0x2a,
@@ -225,31 +224,31 @@ namespace SharedUtil
         0x1b, 0x37, 0x6d, 0xff, 0xec, 0x6a, 0xae, 0xff,
     };
 
-    uchar CVehicleColor::GetPaletteIndexFromRGB(SColor color)
+    std::uint8_t CVehicleColor::GetPaletteIndexFromRGB(SColor color)
     {
-        ulong ulBestDist = 0xFFFFFFFF;
-        uchar ucBestMatch = 0;
-        for (uint i = 0; i < NUMELMS(paletteColorTable8) / 4; i++)
+        std::uint32_t ulBestDist = 0xFFFFFFFF;
+        std::uint8_t ucBestMatch = 0;
+        for (std::uint32_t i = 0; i < NUMELMS(paletteColorTable8) / 4; i++)
         {
             int   r = paletteColorTable8[i * 4 + 0] - color.R;
             int   g = paletteColorTable8[i * 4 + 1] - color.G;
             int   b = paletteColorTable8[i * 4 + 2] - color.B;
-            ulong ulDist = r * r + g * g + b * b;
-            if (ulDist < ulBestDist)
-            {
-                ulBestDist = ulDist;
-                ucBestMatch = i;
-            }
+            std::uint32_t ulDist = r * r + g * g + b * b;
+            if (ulDist >= ulBestDist)
+                continue;
+                
+            ulBestDist = ulDist;
+            ucBestMatch = i;
         }
         return ucBestMatch;
     }
 
-    SColor CVehicleColor::GetRGBFromPaletteIndex(uchar ucColor)
+    SColor CVehicleColor::GetRGBFromPaletteIndex(std::uint8_t ucColor)
     {
-        ucColor = std::min<uchar>(ucColor, static_cast<uint>(NUMELMS(paletteColorTable8) / 4));
-        uchar r = paletteColorTable8[ucColor * 4];
-        uchar g = paletteColorTable8[ucColor * 4 + 1];
-        uchar b = paletteColorTable8[ucColor * 4 + 2];
+        ucColor = std::min<std::uint8_t>(ucColor, static_cast<std::uint32_t>(NUMELMS(paletteColorTable8) / 4));
+        std::uint8_t r = paletteColorTable8[ucColor * 4];
+        std::uint8_t g = paletteColorTable8[ucColor * 4 + 1];
+        std::uint8_t b = paletteColorTable8[ucColor * 4 + 2];
         return SColorRGBA(r, g, b, 0);
     }
 

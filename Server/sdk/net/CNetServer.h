@@ -47,13 +47,13 @@ public:
     virtual void FFlush() = 0;
     virtual int  FTell() = 0;
     virtual void FSeek(int iOffset, int iOrigin) = 0;
-    virtual int  FRead(void* pData, uint uiSize) = 0;
-    virtual int  FWrite(const void* pData, uint uiSize) = 0;
+    virtual int  FRead(void* pData, std::uint32_t uiSize) = 0;
+    virtual int  FWrite(const void* pData, std::uint32_t uiSize) = 0;
 };
 
 struct SNetOptions
 {
-    SNetOptions() { memset(this, 0, sizeof(*this)); }
+    SNetOptions() noexcept { memset(this, 0, sizeof(*this)); }
 
     struct
     {
@@ -88,8 +88,8 @@ struct SScriptInfo
 struct SPlayerPacketUsage
 {
     NetServerPlayerID playerId;
-    uint              uiPktsPerSec;
-    uint              uiBytesPerSec;
+    std::uint32_t              uiPktsPerSec;
+    std::uint32_t              uiBytesPerSec;
 };
 
 class CNetServer
@@ -101,8 +101,8 @@ public:
         STATS_OUTGOING_TRAFFIC = 1
     };
 
-    // szIP can be NULL if autochoosing is wanted.
-    virtual bool StartNetwork(const char* szIP, unsigned short usServerPort, unsigned int uiAllowedPlayers, const char* szServerName) = 0;
+    // szIP can be nullptr if autochoosing is wanted.
+    virtual bool StartNetwork(const char* szIP, std::uint16_t usServerPort, std::uint32_t uiAllowedPlayers, const char* szServerName) = 0;
     virtual void StopNetwork() = 0;
 
     virtual void DoPulse() = 0;
@@ -116,30 +116,30 @@ public:
     virtual void               GetPingStatus(SFixedString<32>* pstrStatus) = 0;
     virtual bool               GetSyncThreadStatistics(SSyncThreadStatistics* pDest, bool bResetCounters) = 0;
 
-    virtual NetBitStreamInterface* AllocateNetServerBitStream(unsigned short usBitStreamVersion, const void* pData = nullptr, uint uiDataSize = 0,
-                                                              bool bCopyData = false) = 0;
+    virtual NetBitStreamInterface* AllocateNetServerBitStream(std::uint16_t usBitStreamVersion,
+        const void* pData = nullptr, std::uint32_t uiDataSize = 0, bool bCopyData = false) = 0;
     virtual void                   DeallocateNetServerBitStream(NetBitStreamInterface* bitStream) = 0;
-    virtual bool                   SendPacket(unsigned char ucPacketID, const NetServerPlayerID& playerID, NetBitStreamInterface* bitStream, bool bBroadcast,
-                                              NetServerPacketPriority packetPriority, NetServerPacketReliability packetReliability,
-                                              ePacketOrdering packetOrdering = PACKET_ORDERING_DEFAULT) = 0;
+    virtual bool                   SendPacket(std::uint8_t ucPacketID, const NetServerPlayerID& playerID,
+        NetBitStreamInterface* bitStream, bool bBroadcast, NetServerPacketPriority packetPriority,
+        NetServerPacketReliability packetReliability, ePacketOrdering packetOrdering = PACKET_ORDERING_DEFAULT) = 0;
 
-    virtual void GetPlayerIP(const NetServerPlayerID& playerID, char strIP[22], unsigned short* usPort) = 0;
+    virtual void GetPlayerIP(const NetServerPlayerID& playerID, char strIP[22], std::uint16_t* usPort) = 0;
 
     virtual void Kick(const NetServerPlayerID& PlayerID) = 0;
 
     virtual void SetPassword(const char* szPassword) = 0;
 
-    virtual void SetMaximumIncomingConnections(unsigned short numberAllowed) = 0;
+    virtual void SetMaximumIncomingConnections(std::uint16_t numberAllowed) = 0;
 
     virtual CNetHTTPDownloadManagerInterface* GetHTTPDownloadManager(EDownloadModeType iMode) = 0;
 
-    virtual void SetClientBitStreamVersion(const NetServerPlayerID& PlayerID, unsigned short usBitStreamVersion) = 0;
+    virtual void SetClientBitStreamVersion(const NetServerPlayerID& PlayerID, std::uint16_t usBitStreamVersion) = 0;
     virtual void ClearClientBitStreamVersion(const NetServerPlayerID& PlayerID) = 0;
 
     virtual void SetChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap, int iEnableClientChecks, bool bHideAC,
                            const char* szImgMods) = 0;
 
-    virtual unsigned int GetPendingPacketCount() = 0;
+    virtual std::uint32_t GetPendingPacketCount() = 0;
     virtual void         GetNetRoute(SFixedString<32>* pstrRoute) = 0;
 
     virtual bool InitServerId(const char* szPath) = 0;
@@ -149,17 +149,22 @@ public:
     virtual void GetClientSerialAndVersion(const NetServerPlayerID& playerID, SFixedString<32>& strSerial, SFixedString<64>& strExtra,
                                            SFixedString<32>& strVersion) = 0;
     virtual void SetNetOptions(const SNetOptions& options) = 0;
-    virtual void GenerateRandomData(void* pOutData, uint uiLength) = 0;
-    virtual bool EncryptDumpfile(const char* szClearPathFilename, const char* szEncryptedPathFilename) { return false; }
-    virtual bool ValidateHttpCacheFileName(const char* szFilename) { return false; }
-    virtual bool GetScriptInfo(const char* cpInBuffer, uint uiInSize, SScriptInfo* pOutInfo) { return false; }
-    virtual bool DeobfuscateScript(const char* cpInBuffer, uint uiInSize, const char** pcpOutBuffer, uint* puiOutSize, const char* szScriptName)
+    virtual void GenerateRandomData(void* pOutData, std::uint32_t uiLength) = 0;
+    virtual bool EncryptDumpfile(const char* szClearPathFilename, const char* szEncryptedPathFilename) const noexcept {
+        return false;
+    }
+    virtual bool ValidateHttpCacheFileName(const char* szFilename) const noexcept { return false; }
+    virtual bool GetScriptInfo(const char* cpInBuffer, std::uint32_t uiInSize, SScriptInfo* pOutInfo) const noexcept {
+        return false;
+    }
+    virtual bool DeobfuscateScript(const char* cpInBuffer, std::uint32_t uiInSize,
+        const char** pcpOutBuffer, std::uint32_t* puiOutSize, const char* szScriptName) const noexcept
     {
         return false;
     }
-    virtual bool        GetPlayerPacketUsageStats(uchar* packetIdList, uint uiNumPacketIds, SPlayerPacketUsage* pOutStats, uint uiTopCount) { return false; }
-    virtual const char* GetLogOutput() { return NULL; }
-    virtual bool        IsValidSocket(const NetServerPlayerID& playerID)
+    virtual bool        GetPlayerPacketUsageStats(std::uint8_t* packetIdList, std::uint32_t uiNumPacketIds, SPlayerPacketUsage* pOutStats, std::uint32_t uiTopCount) { return false; }
+    virtual const char* GetLogOutput() const noexcept { return nullptr; }
+    virtual bool        IsValidSocket(const NetServerPlayerID& playerID) const noexcept
     {
         assert(0);
         return false;

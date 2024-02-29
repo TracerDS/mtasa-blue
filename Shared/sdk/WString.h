@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include <cstdarg>
-#include "SharedUtil.IntTypes.h"
 #include "SString.h"
 
 #ifdef WIN32
@@ -30,15 +29,15 @@ class WString : public std::wstring
 {
 public:
     // Constructors
-    WString() : std::wstring() {}
+    WString() noexcept : std::wstring() {}
 
-    WString(const wchar_t* szText) : std::wstring(szText ? szText : L"") {}
+    WString(const wchar_t* szText) noexcept : std::wstring(szText ? szText : L"") {}
 
     WString(const char* szText);
 
-    WString(const char16_t* szText) : std::wstring(szText ? (const wchar_t*)szText : L""){};
+    WString(const char16_t* szText) noexcept : std::wstring(szText ? (const wchar_t*)szText : L""){};
 
-    explicit WString(const wchar_t* szFormat, ...) : std::wstring()
+    explicit WString(const wchar_t* szFormat, ...) noexcept : std::wstring()
     {
         if (szFormat)
         {
@@ -100,7 +99,7 @@ public:
     bool           BeginsWith(const WString& strOther) const;
     bool           BeginsWithI(const WString& strOther) const;
     static WString Join(const WString& strDelim, const std::vector<WString>& parts, int iFirst = 0, int iCount = 0x3fffffff);
-    void           AssignLeft(const wchar_t* szOther, uint uiMaxLength);
+    void           AssignLeft(const wchar_t* szOther, std::uint32_t uiMaxLength);
 
     SString ToAnsi() const;
 };
@@ -108,6 +107,6 @@ public:
 class WStringX : public WString
 {
 public:
-    WStringX(const wchar_t* szText) : WString(std::wstring(szText ? szText : L"")) {}
-    WStringX(const wchar_t* szText, uint uiLength) : WString(std::wstring(szText ? szText : L"", uiLength)) {}
+    WStringX(const wchar_t* szText) noexcept : WString(std::wstring(szText ? szText : L"")) {}
+    WStringX(const wchar_t* szText, std::uint32_t uiLength) noexcept : WString(std::wstring(szText ? szText : L"", uiLength)) {}
 };

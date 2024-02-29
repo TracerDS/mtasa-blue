@@ -11,7 +11,6 @@
 
 #include <list>
 #include <deque>
-#include "SharedUtil.IntTypes.h"
 
 template <class T>
 class CDuplicateLineFilter
@@ -19,11 +18,11 @@ class CDuplicateLineFilter
 public:
     struct SOutputLine : public T
     {
-        SOutputLine(const T& line, uint uiCount) : T(line), uiDupCount(uiCount) {}
-        uint uiDupCount;
+        SOutputLine(const T& line, std::uint32_t uiCount) noexcept : T(line), uiDupCount(uiCount) {}
+        std::uint32_t uiDupCount;
     };
 
-    CDuplicateLineFilter(uint uiMaxNumOfLinesInMatch = 4, uint uiMaxDelaySeconds = 5)
+    CDuplicateLineFilter(std::uint32_t uiMaxNumOfLinesInMatch = 4, std::uint32_t uiMaxDelaySeconds = 5) noexcept
     {
         m_uiMaxNumOfLinesInMatch = uiMaxNumOfLinesInMatch;
         m_uiMaxDelaySeconds = uiMaxDelaySeconds;
@@ -36,11 +35,11 @@ public:
     //////////////////////////////////////////////////////////
     void AddLine(const T& line)
     {
-        if (m_bIsMatching == false)
+        if (!m_bIsMatching)
         {
             // Not currently matching
             // Search history for first line of new match
-            for (uint i = 0; i < m_History.size(); i++)
+            for (std::uint32_t i = 0; i < m_History.size(); i++)
             {
                 if (line == m_History.at(i))
                 {
@@ -59,7 +58,7 @@ public:
         {
             // Is currently matching
             // Check if match will continue
-            uint uiNextLine = (m_uiMatchCurLine - 1 + m_uiMatchSize) % m_uiMatchSize;
+            std::uint32_t uiNextLine = (m_uiMatchCurLine - 1 + m_uiMatchSize) % m_uiMatchSize;
             if (line == m_History.at(uiNextLine))
             {
                 // Still matching
@@ -93,14 +92,15 @@ public:
     //////////////////////////////////////////////////////////
     void Flush()
     {
-        if (m_bIsMatching == false)
+        if (!m_bIsMatching)
             return;
+
         m_bIsMatching = false;
 
         // Handle full set matches
         if (m_uiDupCount > 0)
         {
-            for (uint i = 0; i < m_uiMatchSize; i++)
+            for (std::uint32_t i = 0; i < m_uiMatchSize; i++)
             {
                 AddLineToOutputBuffer(m_History.at(m_uiMatchSize - 1 - i), m_uiDupCount);
             }
@@ -109,7 +109,7 @@ public:
         // Handle partial set matches
         if (m_uiMatchCurLine > 0)
         {
-            for (uint i = 0; i < m_uiMatchSize - m_uiMatchCurLine; i++)
+            for (std::uint32_t i = 0; i < m_uiMatchSize - m_uiMatchCurLine; i++)
             {
                 AddLineToOutputBuffer(m_History.at(m_uiMatchSize - 1 - i));
             }
@@ -122,7 +122,7 @@ public:
     // AddLineToOutputBuffer
     //
     //////////////////////////////////////////////////////////
-    void AddLineToOutputBuffer(const T& line, uint uiDupCount = 0) { m_PendingOutput.push_back(SOutputLine(line, uiDupCount)); }
+    void AddLineToOutputBuffer(const T& line, std::uint32_t uiDupCount = 0) { m_PendingOutput.push_back(SOutputLine(line, uiDupCount)); }
 
     //////////////////////////////////////////////////////////
     //
@@ -135,12 +135,12 @@ public:
     {
         if (m_PendingOutput.empty())
         {
-            if (time(NULL) - m_tLastOutputTime > m_uiMaxDelaySeconds)
+            if (time(nullptr) - m_tLastOutputTime > m_uiMaxDelaySeconds)
                 Flush();
             if (m_PendingOutput.empty())
                 return false;
         }
-        m_tLastOutputTime = time(NULL);
+        m_tLastOutputTime = time(nullptr);
 
         const SOutputLine& line = m_PendingOutput.front();
         outLine = line;
@@ -154,10 +154,10 @@ protected:
     std::deque<T>          m_History;
     std::list<SOutputLine> m_PendingOutput;
     bool                   m_bIsMatching = false;            // true if matching a duplicate set
-    uint                   m_uiMatchSize = 0;                // Number of lines in active match
-    uint                   m_uiMatchCurLine = 0;             // Current line in active match
-    uint                   m_uiDupCount = 0;                 // Number of duplicates found for active match
+    std::uint32_t          m_uiMatchSize = 0;                // Number of lines in active match
+    std::uint32_t          m_uiMatchCurLine = 0;             // Current line in active match
+    std::uint32_t          m_uiDupCount = 0;                 // Number of duplicates found for active match
     time_t                 m_tLastOutputTime = 0;
-    uint                   m_uiMaxNumOfLinesInMatch;            // Max number lines in a matching set
-    uint                   m_uiMaxDelaySeconds;                 // Max seconds to delay outputting duplicated lines
+    std::uint32_t          m_uiMaxNumOfLinesInMatch;            // Max number lines in a matching set
+    std::uint32_t          m_uiMaxDelaySeconds;                 // Max seconds to delay outputting duplicated lines
 };

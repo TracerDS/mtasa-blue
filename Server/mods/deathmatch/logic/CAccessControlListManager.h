@@ -47,8 +47,8 @@ public:
     void ClearACLs();
     void ClearGroups();
 
-    CAccessControlListGroup* GetGroupFromScriptID(uint uiScriptID);
-    CAccessControlList*      GetACLFromScriptID(uint uiScriptID);
+    CAccessControlListGroup* GetGroupFromScriptID(std::uint32_t uiScriptID);
+    CAccessControlList*      GetACLFromScriptID(std::uint32_t uiScriptID);
 
     std::list<class CAccessControlList*>::const_iterator ACL_Begin() { return m_ACLs.begin(); };
     std::list<class CAccessControlList*>::const_iterator ACL_End() { return m_ACLs.end(); };
@@ -63,17 +63,18 @@ public:
     static const char* ExtractRightName(const char* szRightName, CAccessControlListRight::ERightType& eType);
 
     void                 OnChange();
-    uint                 GetGlobalRevision() { return m_uiGlobalRevision; }
+    std::uint32_t        GetGlobalRevision() const noexcept { return m_uiGlobalRevision; }
     std::vector<SString> GetObjectGroupNames(const SString& strObjectName, CAccessControlListGroupObject::EObjectType objectType);
 
 private:
     void ClearReadCache();
-    bool InternalCanObjectUseRight(const char* szObjectName, CAccessControlListGroupObject::EObjectType, const char* szRightName,
-                                   CAccessControlListRight::ERightType eRightType, bool bDefaultAccessRight);
-    void RemoveACLDependencies(class CAccessControlList* pACL);
+    bool InternalCanObjectUseRight(const char* szObjectName,
+        CAccessControlListGroupObject::EObjectType eObjectType, const char* szRightName,
+        CAccessControlListRight::ERightType eRightType, bool bDefaultAccessRight);
+    void RemoveACLDependencies(CAccessControlList* pACL);
 
-    std::list<class CAccessControlListGroup*> m_Groups;
-    std::list<class CAccessControlList*>      m_ACLs;
+    std::list<CAccessControlListGroup*> m_Groups;
+    std::list<CAccessControlList*>      m_ACLs;
 
     CAccountManager* m_pAccountManager;
 
@@ -84,8 +85,8 @@ private:
     long long                   m_llLastTimeReadCacheCleared;
     CFastHashMap<SString, bool> m_ReadCacheMap;
 
-    bool         m_bNeedsSave;
-    bool         m_bAllowSave;
-    CElapsedTime m_AutoSaveTimer;
-    uint         m_uiGlobalRevision;
+    bool          m_bNeedsSave;
+    bool          m_bAllowSave;
+    CElapsedTime  m_AutoSaveTimer;
+    std::uint32_t m_uiGlobalRevision;
 };

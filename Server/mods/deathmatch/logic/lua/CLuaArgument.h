@@ -30,23 +30,23 @@ class CLuaArgument
 {
 public:
     CLuaArgument();
-    CLuaArgument(const CLuaArgument& Argument, CFastHashMap<CLuaArguments*, CLuaArguments*>* pKnownTables = NULL);
-    CLuaArgument(lua_State* luaVM, int iArgument, CFastHashMap<const void*, CLuaArguments*>* pKnownTables = NULL);
+    CLuaArgument(const CLuaArgument& Argument, CFastHashMap<CLuaArguments*, CLuaArguments*>* pKnownTables = nullptr);
+    CLuaArgument(lua_State* luaVM, int iArgument, CFastHashMap<const void*, CLuaArguments*>* pKnownTables = nullptr);
     ~CLuaArgument();
 
     const CLuaArgument& operator=(const CLuaArgument& Argument);
     bool                operator==(const CLuaArgument& Argument) const;
     bool                operator!=(const CLuaArgument& Argument) const;
 
-    void Read(lua_State* luaVM, int iArgument, CFastHashMap<const void*, CLuaArguments*>* pKnownTables = NULL);
-    void Push(lua_State* luaVM, CFastHashMap<CLuaArguments*, int>* pKnownTables = NULL) const;
+    void Read(lua_State* luaVM, int iArgument, CFastHashMap<const void*, CLuaArguments*>* pKnownTables = nullptr);
+    void Push(lua_State* luaVM, CFastHashMap<CLuaArguments*, int>* pKnownTables = nullptr) const;
 
     void ReadBool(bool bBool);
     void ReadNumber(double dNumber);
     void ReadString(const std::string& strString);
     void ReadElement(CElement* pElement);
     void ReadElementID(ElementID ID);
-    void ReadScriptID(uint uiScriptID);
+    void ReadScriptID(std::uint32_t uiScriptID);
     void ReadTable(class CLuaArguments* table);
 
     int GetType() const { return m_iType; };
@@ -58,10 +58,10 @@ public:
     CElement*          GetElement() const;
     bool               GetAsString(SString& strBuffer);
 
-    bool         ReadFromBitStream(NetBitStreamInterface& bitStream, std::vector<CLuaArguments*>* pKnownTables = NULL);
-    bool         WriteToBitStream(NetBitStreamInterface& bitStream, CFastHashMap<CLuaArguments*, unsigned long>* pKnownTables = NULL) const;
-    json_object* WriteToJSONObject(bool bSerialize = false, CFastHashMap<CLuaArguments*, unsigned long>* pKnownTables = NULL);
-    bool         ReadFromJSONObject(json_object* object, std::vector<CLuaArguments*>* pKnownTables = NULL);
+    bool         ReadFromBitStream(NetBitStreamInterface& bitStream, std::vector<CLuaArguments*>* pKnownTables = nullptr);
+    bool         WriteToBitStream(NetBitStreamInterface& bitStream, CFastHashMap<CLuaArguments*, std::uint32_t>* pKnownTables = nullptr) const;
+    json_object* WriteToJSONObject(bool bSerialize = false, CFastHashMap<CLuaArguments*, std::uint32_t>* pKnownTables = nullptr);
+    bool         ReadFromJSONObject(json_object* object, std::vector<CLuaArguments*>* pKnownTables = nullptr);
     char*        WriteToString(char* szBuffer, int length);
 
     bool IsEqualTo(const CLuaArgument& compareTo, std::set<const CLuaArguments*>* knownTables = nullptr) const;
@@ -82,6 +82,6 @@ private:
     int         m_iLine;
 #endif
 
-    void CopyRecursive(const CLuaArgument& Argument, CFastHashMap<CLuaArguments*, CLuaArguments*>* pKnownTables = NULL);
+    void CopyRecursive(const CLuaArgument& Argument, CFastHashMap<CLuaArguments*, CLuaArguments*>* pKnownTables = nullptr);
     void DeleteTableData();
 };

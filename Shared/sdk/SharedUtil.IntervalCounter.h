@@ -9,7 +9,6 @@
  *****************************************************************************/
 #pragma once
 
-#include "SharedUtil.IntTypes.h"
 #include "SharedUtil.Misc.h"
 #include "SharedUtil.Thread.h"
 

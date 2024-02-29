@@ -9,8 +9,6 @@
  *
  *****************************************************************************/
 
-class CTextItem;
-
 #pragma once
 
 #include <CVector2D.h>
@@ -30,50 +28,51 @@ class CTextItem
     friend class CPlayerTextManager;
 
 public:
-    CTextItem(const char* szText, const CVector2D& vecPosition, eTextPriority Priority = PRIORITY_LOW, const SColor color = -1, float fScale = 1.0f,
-              unsigned char ucFormat = 0, unsigned char ucShadowAlpha = 0);
-    CTextItem(const CTextItem& TextItem);
-    ~CTextItem();
+    CTextItem(const char* szText, const CVector2D& vecPosition,
+        eTextPriority Priority = PRIORITY_LOW, const SColor color = -1, float fScale = 1.0f,
+        std::uint8_t ucFormat = 0, std::uint8_t ucShadowAlpha = 0) noexcept;
+    CTextItem(const CTextItem& TextItem) noexcept;
+    ~CTextItem() noexcept;
 
-    bool operator=(const CTextItem& TextItem);
+    bool operator=(const CTextItem& TextItem) noexcept;
 
-    void           SetText(const char* szText);
-    const SString& GetText() { return m_strText; };
+    void           SetText(const char* szText) noexcept;
+    const SString& GetText() const noexcept { return m_strText; };
 
-    const CVector2D& GetPosition() { return m_vecPosition; };
-    void             SetPosition(const CVector2D& vecPosition);
+    const CVector2D& GetPosition() const noexcept { return m_vecPosition; };
+    void             SetPosition(const CVector2D& vecPosition) noexcept;
 
-    void   SetColor(const SColor color);
-    SColor GetColor() const { return m_Color; }
+    void   SetColor(const SColor color) noexcept;
+    SColor GetColor() const noexcept { return m_Color; }
 
-    float GetScale() { return m_fScale; };
-    void  SetScale(float fScale);
+    float GetScale() noexcept { return m_fScale; };
+    void  SetScale(float fScale) noexcept;
 
-    unsigned char GetFormat() { return m_ucFormat; }
-    void          SetFormat(unsigned char ucFormat) { m_ucFormat = ucFormat; }
+    std::uint8_t GetFormat() const noexcept{ return m_ucFormat; }
+    void         SetFormat(std::uint8_t ucFormat) noexcept { m_ucFormat = ucFormat; }
 
-    void          SetPriority(eTextPriority Priority) { m_Priority = Priority; };
-    eTextPriority GetPriority() { return m_Priority; };
+    void          SetPriority(eTextPriority Priority) noexcept { m_Priority = Priority; };
+    eTextPriority GetPriority() const noexcept { return m_Priority; };
 
-    unsigned long GetUniqueID() { return m_ulUniqueId; };
-    bool          IsBeingDeleted() { return m_bDeletable; };
-    uint          GetScriptID() const { return m_uiScriptID; }
+    std::uint32_t GetUniqueID() const noexcept { return m_ulUniqueId; };
+    bool          IsBeingDeleted() const noexcept { return m_bDeletable; };
+    std::uint32_t GetScriptID() const noexcept { return m_uiScriptID; }
 
 private:
     SString       m_strText;
     CVector2D     m_vecPosition;
     SColor        m_Color;
     float         m_fScale;
-    unsigned char m_ucFormat;
-    unsigned char m_ucShadowAlpha;
-    unsigned long m_ulUniqueId;
+    std::uint8_t  m_ucFormat;
+    std::uint8_t  m_ucShadowAlpha;
+    std::uint32_t m_ulUniqueId;
     eTextPriority m_Priority;
     bool          m_bDeletable;
-    uint          m_uiScriptID;
+    std::uint32_t m_uiScriptID;
 
     std::list<CTextDisplay*> m_Observers;
 
     void AddObserver(CTextDisplay* pObserver);
-    void RemoveObserver(CTextDisplay* pObserver) { m_Observers.remove(pObserver); };
+    void RemoveObserver(CTextDisplay* pObserver) noexcept { m_Observers.remove(pObserver); };
     void NotifyObservers();
 };

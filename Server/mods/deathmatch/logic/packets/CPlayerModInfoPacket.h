@@ -15,28 +15,28 @@
 
 struct SModInfoItem
 {
-    ushort  usId;
-    uint    uiHash;
-    SString strName;
-    bool    bHasSize;
-    CVector vecSize;
-    CVector vecOriginalSize;
-    bool    bHasHashInfo;
-    uint    uiShortBytes;
-    SString strShortMd5;
-    SString strShortSha256;
-    uint    uiLongBytes;
-    SString strLongMd5;
-    SString strLongSha256;
+    std::uint16_t usId;
+    std::uint32_t uiHash;
+    SString       strName;
+    bool          bHasSize;
+    CVector       vecSize;
+    CVector       vecOriginalSize;
+    bool          bHasHashInfo;
+    std::uint32_t uiShortBytes;
+    SString       strShortMd5;
+    SString       strShortSha256;
+    std::uint32_t uiLongBytes;
+    SString       strLongMd5;
+    SString       strLongSha256;
 };
 
 class CPlayerModInfoPacket final : public CPacket
 {
 public:
-    ePacketID     GetPacketID() const { return PACKET_ID_PLAYER_MODINFO; };
-    unsigned long GetFlags() const { return 0; };            // Not used
+    ePacketID     GetPacketID() const noexcept { return PACKET_ID_PLAYER_MODINFO; }
+    std::uint32_t GetFlags() const noexcept { return 0; }            // Not used
 
-    bool Read(NetBitStreamInterface& BitStream);
+    bool Read(NetBitStreamInterface& BitStream) noexcept;
 
     SString                   m_strInfoType;
     std::vector<SModInfoItem> m_ModInfoItemList;

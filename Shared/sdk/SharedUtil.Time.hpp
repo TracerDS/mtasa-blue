@@ -21,7 +21,7 @@
 
 static CCriticalSection ms_criticalSection;
 static long long        ms_llTickCountAdd = 0;
-unsigned long           GetTickCountInternal();
+std::uint32_t           GetTickCountInternal();
 
 // Debugging
 void SharedUtil::AddTickCount(long long llTickCountAdd)
@@ -108,7 +108,7 @@ SString SharedUtil::GetTimeString(bool bDate, bool bMilliseconds, bool bLocal)
     return strResult;
 #else
     timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     time_t t = now.tv_sec;
     tm*    tmp = bLocal ? localtime(&t) : gmtime(&t);
     assert(tmp);
@@ -156,7 +156,7 @@ public:
     {
         if (value != m_OutputBuffersA[m_ucLastWrittenIndex])
         {
-            uchar ucIndex = m_ucLastWrittenIndex;
+            std::uint8_t ucIndex = m_ucLastWrittenIndex;
             ucIndex = (ucIndex + 1) % BUFFER_SIZE;
             m_OutputBuffersA[ucIndex] = value;
             m_OutputBuffersB[ucIndex] = value;
@@ -168,7 +168,7 @@ public:
     {
         while (true)
         {
-            uchar ucIndex = m_ucLastWrittenIndex;
+            std::uint8_t ucIndex = m_ucLastWrittenIndex;
             T     resultA = m_OutputBuffersA[ucIndex];
             T     resultB = m_OutputBuffersB[ucIndex];
             if (resultA == resultB)
@@ -177,7 +177,7 @@ public:
     }
 
 protected:
-    volatile uchar m_ucLastWrittenIndex;
+    volatile std::uint8_t m_ucLastWrittenIndex;
     volatile T     m_OutputBuffersA[BUFFER_SIZE];
     volatile T     m_OutputBuffersB[BUFFER_SIZE];
 };
@@ -250,7 +250,7 @@ void SharedUtil::UpdateModuleTickCount64()
 
 // Apple / Darwin platforms with Mach monotonic clock support
 #include <mach/mach_time.h>
-unsigned long GetTickCountInternal()
+std::uint32_t GetTickCountInternal()
 {
     mach_timebase_info_data_t info;
 
@@ -265,10 +265,10 @@ unsigned long GetTickCountInternal()
     return (nNanoTime / 1000000);
 }
 
-#elif !defined(WIN32)
+#elif !defined(_WIN32)
 
 // BSD / Linux platforms with POSIX monotonic clock support
-unsigned long GetTickCountInternal()
+std::uint32_t GetTickCountInternal()
 {
     #if !defined(CLOCK_MONOTONIC)
     #error "This platform does not have monotonic clock support."
@@ -294,7 +294,7 @@ unsigned long GetTickCountInternal()
     ** run-time. When this occurs simply fallback to other time source.
     */
     else
-        gettimeofday(&now, NULL);
+        gettimeofday(&now, nullptr);
 
     // ACHTUNG: Note that the above gettimeofday fallback is dangerous because it is a wall clock
     // and thus not guaranteed to be monotonic. Ideally, this function should throw a fatal error
@@ -309,7 +309,7 @@ unsigned long GetTickCountInternal()
 // Win32 platforms
 #include <Mmsystem.h>
 #pragma comment(lib, "Winmm.lib")
-unsigned long GetTickCountInternal()
+std::uint32_t GetTickCountInternal()
 {
     // Uses timeGetTime() as Win32 GetTickCount() has a resolution of 16ms.
     //   (timeGetTime() has a resolution is 1ms assuming timeBeginPeriod(1) has been called at startup).
@@ -319,7 +319,7 @@ unsigned long GetTickCountInternal()
 #endif
 
 // Get time in microseconds
-#ifdef WIN32
+#ifdef _WIN32
 // Due to issues with QueryPerformanceCounter, this function should only be used for profiling
 TIMEUS SharedUtil::GetTimeUs()
 {
@@ -341,26 +341,24 @@ TIMEUS SharedUtil::GetTimeUs()
 }
 #else
 #include <sys/time.h>                // for gettimeofday()
-using namespace std;
-typedef long long LONGLONG;
 
-TIMEUS SharedUtil::GetTimeUs()
+std::int64_t SharedUtil::GetTimeUs()
 {
-    static bool    bInitialized = false;
+    static bool bInitialized = false;
     static timeval t1;
     if (!bInitialized)
     {
         bInitialized = true;
         // start timer
-        gettimeofday(&t1, NULL);
+        gettimeofday(&t1, nullptr);
     }
 
     // stop timer
     timeval t2;
-    gettimeofday(&t2, NULL);
+    gettimeofday(&t2, nullptr);
 
     // compute elapsed time in us
-    LONGLONG llDuration;
+    std::int64_t llDuration;
     llDuration = (t2.tv_sec - t1.tv_sec) * 1000000LL;            // sec to us
     llDuration += (t2.tv_usec - t1.tv_usec);                     // us to us
 

@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include "SharedUtil.IntTypes.h"
 #include "CVector.h"
 #include <array>
 #include <cassert>
@@ -178,10 +177,10 @@ public:
     // Ensure matrix component axes are normalized and orthogonal to each other.
     // Axis A direction is preserved, B is adjusted, the other is overwritten.
     //
-    void OrthoNormalize(const uint A, const uint B)
+    void OrthoNormalize(const std::uint32_t A, const std::uint32_t B) noexcept
     {
         // Deduce 3rd axis index
-        const uint C = 3 - A - B;
+        const std::uint32_t C = 3 - A - B;
 
         // Ensure indices are in range and unique
         assert(A < 3 && B < 3 && C < 3 && A != B && C != A && C != B);
@@ -213,7 +212,7 @@ public:
         }
     }
 
-    CMatrix GetRotationMatrix() const
+    CMatrix GetRotationMatrix() const noexcept
     {
         // Operate only on rotation, ignore scale.
         CMatrix matClone = Clone();
@@ -228,7 +227,7 @@ public:
     // Get matrix rotation as angles
     // Inverted to match MTAized rotations for vehicles and players (and objects on the server)
     // Should produce the same results as ( CVector(0,0,0) - ConvertToEulerAngles() )
-    CVector GetRotation() const
+    CVector GetRotation() const noexcept
     {
         // Operate only on rotation, ignore scale.
         CMatrix matRot = GetRotationMatrix();
@@ -245,7 +244,7 @@ public:
     // Set matrix rotational part
     // Inverted to match MTAized rotations for vehicles and players (and objects on the server)
     // Should produce the same results as ( CVector(0,0,0) - ConvertFromEulerAngles() )
-    void SetRotation(const CVector& vecRotation)
+    void SetRotation(const CVector& vecRotation) noexcept
     {
         float fCosX = cos(-vecRotation.fX);
         float fCosY = cos(-vecRotation.fY);
@@ -274,12 +273,12 @@ public:
     }
 
     // Get matrix translational part
-    const CVector& GetPosition() const { return vPos; }
+    const CVector& GetPosition() const noexcept { return vPos; }
 
     // Set matrix translational part
-    void SetPosition(const CVector& vecPosition) { vPos = vecPosition; }
+    void SetPosition(const CVector& vecPosition) noexcept { vPos = vecPosition; }
 
-    CVector GetScale() const { return CVector(vRight.Length(), vFront.Length(), vUp.Length()); }
+    CVector GetScale() const noexcept { return CVector(vRight.Length(), vFront.Length(), vUp.Length()); }
 
     void SetScale(const CVector& vecScale)
     {
@@ -291,7 +290,7 @@ public:
     //
     // Get reference to component axis by index
     //
-    CVector& GetAxis(const uint uiIndex)
+    CVector& GetAxis(const std::uint32_t uiIndex) noexcept
     {
         if (uiIndex == AXIS_UP)
             return vUp;
@@ -301,7 +300,7 @@ public:
         return vRight;
     }
 
-    void GetBuffer(float* array)
+    void GetBuffer(float* array) const noexcept
     {
         array[0] = vRight.fX;
         array[1] = vRight.fY;

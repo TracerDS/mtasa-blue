@@ -10,7 +10,6 @@
  *****************************************************************************/
 #pragma once
 
-#include "SharedUtil.IntTypes.h"
 #include <assert.h>
 #include "SharedUtil.Defines.h"
 #include "SharedUtil.AllocTracking.h"

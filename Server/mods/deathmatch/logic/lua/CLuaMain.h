@@ -31,8 +31,8 @@ class CMapManager;
 
 struct CRefInfo
 {
-    unsigned long int ulUseCount;
-    int               iFunction;
+    std::uint32_t ulUseCount;
+    int           iFunction;
 };
 
 class CLuaMain            //: public CClient
@@ -44,7 +44,7 @@ public:
 
     ~CLuaMain();
 
-    bool LoadScriptFromBuffer(const char* cpBuffer, unsigned int uiSize, const char* szFileName);
+    bool LoadScriptFromBuffer(const char* cpBuffer, std::uint32_t uiSize, const char* szFileName);
     bool LoadScript(const char* szLUAScript);
     void UnloadScript();
 
@@ -52,7 +52,7 @@ public:
 
     void DoPulse();
 
-    const char* GetScriptName() const { return m_strScriptName; }
+    const char* GetScriptName() const noexcept { return m_strScriptName; }
     void        SetScriptName(const char* szName) { m_strScriptName.AssignLeft(szName, MAX_SCRIPTNAME_LENGTH); }
 
     lua_State*        GetVM() { return m_luaVM; };
@@ -70,23 +70,23 @@ public:
     bool          DestroyXML(CXMLNode* pRootNode);
     bool          SaveXML(CXMLNode* pRootNode);
     bool          XMLExists(CXMLFile* pFile);
-    unsigned long GetXMLFileCount() const { return m_XMLFiles.size(); };
-    unsigned long GetOpenFileCount() const { return m_OpenFilenameList.size(); };
-    unsigned long GetTimerCount() const { return m_pLuaTimerManager ? m_pLuaTimerManager->GetTimerCount() : 0; };
-    unsigned long GetElementCount() const;
-    unsigned long GetTextDisplayCount() const { return m_Displays.size(); };
-    unsigned long GetTextItemCount() const { return m_TextItems.size(); };
+    std::uint32_t GetXMLFileCount() const { return m_XMLFiles.size(); };
+    std::uint32_t GetOpenFileCount() const { return m_OpenFilenameList.size(); };
+    std::uint32_t GetTimerCount() const { return m_pLuaTimerManager ? m_pLuaTimerManager->GetTimerCount() : 0; };
+    std::uint32_t GetElementCount() const;
+    std::uint32_t GetTextDisplayCount() const { return m_Displays.size(); };
+    std::uint32_t GetTextItemCount() const { return m_TextItems.size(); };
     void          OnOpenFile(const SString& strFilename);
     void          OnCloseFile(const SString& strFilename);
 
     CTextDisplay* CreateDisplay();
     void          DestroyDisplay(CTextDisplay* pDisplay);
-    CTextItem*    CreateTextItem(const char* szText, float fX, float fY, eTextPriority priority = PRIORITY_LOW, const SColor color = -1, float fScale = 1.0f,
-                                 unsigned char format = 0, unsigned char ucShadowAlpha = 0);
+    CTextItem*    CreateTextItem(const char* szText, float fX, float fY, eTextPriority priority = PRIORITY_LOW,
+        const SColor color = -1, float fScale = 1.0f, std::uint8_t format = 0, std::uint8_t ucShadowAlpha = 0);
     void          DestroyTextItem(CTextItem* pTextItem);
 
-    CTextDisplay* GetTextDisplayFromScriptID(uint uiScriptID);
-    CTextItem*    GetTextItemFromScriptID(uint uiScriptID);
+    CTextDisplay* GetTextDisplayFromScriptID(std::uint32_t uiScriptID);
+    CTextItem*    GetTextItemFromScriptID(std::uint32_t uiScriptID);
 
     bool       BeingDeleted();
     lua_State* GetVirtualMachine() const { return m_luaVM; };
@@ -124,14 +124,14 @@ private:
     lua_State*        m_luaVM;
     CLuaTimerManager* m_pLuaTimerManager;
 
-    class CResource*     m_pResource;
-    class CResourceFile* m_pResourceFile;
-    CBlipManager*        m_pBlipManager;
-    CObjectManager*      m_pObjectManager;
-    CPlayerManager*      m_pPlayerManager;
-    CRadarAreaManager*   m_pRadarAreaManager;
-    CVehicleManager*     m_pVehicleManager;
-    CMapManager*         m_pMapManager;
+    CResource*         m_pResource;
+    CResourceFile*     m_pResourceFile;
+    CBlipManager*      m_pBlipManager;
+    CObjectManager*    m_pObjectManager;
+    CPlayerManager*    m_pPlayerManager;
+    CRadarAreaManager* m_pRadarAreaManager;
+    CVehicleManager*   m_pVehicleManager;
+    CMapManager*       m_pMapManager;
 
     list<CXMLFile*>                                 m_XMLFiles;
     std::unordered_set<std::unique_ptr<SXMLString>> m_XMLStringNodes;
@@ -144,10 +144,10 @@ private:
 
     CElapsedTime         m_FunctionEnterTimer;
     CElapsedTimeApprox   m_WarningTimer;
-    uint                 m_uiPCallDepth;
+    std::uint32_t        m_uiPCallDepth;
     std::vector<SString> m_OpenFilenameList;
-    uint                 m_uiOpenFileCountWarnThresh;
-    uint                 m_uiOpenXMLFileCountWarnThresh;
+    std::uint32_t        m_uiOpenFileCountWarnThresh;
+    std::uint32_t        m_uiOpenXMLFileCountWarnThresh;
     static SString       ms_strExpectedUndumpHash;
 
 public:

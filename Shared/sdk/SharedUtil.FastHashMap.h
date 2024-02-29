@@ -56,15 +56,15 @@ namespace SharedUtil
     class CFastHashMap : public google::dense_hash_map<K, V>
     {
     public:
-        CFastHashMap(uint uiInitialSize) : google::dense_hash_map<K, V>(uiInitialSize)
+        CFastHashMap(std::uint32_t uiInitialSize) : google::dense_hash_map<K, V>(uiInitialSize)
         {
-            this->set_empty_key(GetEmptyMapKey((K*)NULL));
-            this->set_deleted_key(GetDeletedMapKey((K*)NULL));
+            this->set_empty_key(GetEmptyMapKey((K*)nullptr));
+            this->set_deleted_key(GetDeletedMapKey((K*)nullptr));
         }
         CFastHashMap()
         {
-            this->set_empty_key(GetEmptyMapKey((K*)NULL));
-            this->set_deleted_key(GetDeletedMapKey((K*)NULL));
+            this->set_empty_key(GetEmptyMapKey((K*)nullptr));
+            this->set_deleted_key(GetDeletedMapKey((K*)nullptr));
         }
     };
 
@@ -90,7 +90,7 @@ namespace SharedUtil
     {
         typename CFastHashMap<T, V>::iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return &it->second;
     }
 
@@ -100,7 +100,7 @@ namespace SharedUtil
     {
         typename CFastHashMap<T, V>::const_iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return &it->second;
     }
 
@@ -110,7 +110,7 @@ namespace SharedUtil
     {
         typename CFastHashMap<T, V>::iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return it->second;
     }
 
@@ -120,7 +120,7 @@ namespace SharedUtil
     {
         typename CFastHashMap<T, V>::const_iterator it = collection.find(key);
         if (it == collection.end())
-            return NULL;
+            return nullptr;
         return it->second;
     }
 
