@@ -23,7 +23,7 @@ extern "C"
 
 ASE* ASE::_instance = NULL;
 
-ASE::ASE(CMainConfig* pMainConfig, CPlayerManager* pPlayerManager, unsigned short usPort, const SString& strServerIPList /*, bool bLan*/)
+ASE::ASE(CMainConfig* pMainConfig, CPlayerManager* pPlayerManager, std::uint16_t usPort, const SString& strServerIPList /*, bool bLan*/)
     : m_QueryDosProtect(5, 6000, 7000)            // Max of 5 queries per 6 seconds, then 7 second ignore
 {
     _instance = this;
@@ -72,7 +72,7 @@ bool ASE::SetPortEnabled(bool bInternetEnabled, bool bLanEnabled)
     // Calc requirements
     bool   bPortEnableReq = bInternetEnabled || bLanEnabled;
     bool   bLanOnly = !bInternetEnabled && bLanEnabled;
-    ushort usPortReq = m_usPortBase + SERVER_LIST_QUERY_PORT_OFFSET;
+    std::uint16_t usPortReq = m_usPortBase + SERVER_LIST_QUERY_PORT_OFFSET;
 
     // Any change?
     if ((!m_SocketList.empty()) == bPortEnableReq && m_usPort == usPortReq)
@@ -81,7 +81,7 @@ bool ASE::SetPortEnabled(bool bInternetEnabled, bool bLanEnabled)
     m_usPort = usPortReq;
 
     // Remove current thingmy
-    for (uint s = 0; s < m_SocketList.size(); s++)
+    for (std::uint32_t s = 0; s < m_SocketList.size(); s++)
     {
         closesocket(m_SocketList[s]);
     }
@@ -94,7 +94,7 @@ bool ASE::SetPortEnabled(bool bInternetEnabled, bool bLanEnabled)
     // If a local IP has been specified, ensure it is used for sending
     std::vector<SString> ipList;
     m_strIPList.Split(",", ipList);
-    for (uint i = 0; i < ipList.size(); i++)
+    for (std::uint32_t i = 0; i < ipList.size(); i++)
     {
         const SString& strIP = ipList[i];
         sockaddr_in    sockAddr;
@@ -124,12 +124,12 @@ bool ASE::SetPortEnabled(bool bInternetEnabled, bool bLanEnabled)
         }
 
         // Set it to non blocking, so we dont have to wait for a packet
-        #ifdef WIN32
-        unsigned long ulNonBlock = 1;
+#ifdef _WIN32
+        u_long ulNonBlock = 1;
         ioctlsocket(newSocket, FIONBIO, &ulNonBlock);
-        #else
+#else
         fcntl(newSocket, F_SETFL, fcntl(newSocket, F_GETFL) | O_NONBLOCK);
-        #endif
+#endif
 
         m_SocketList.push_back(newSocket);
     }
@@ -143,7 +143,7 @@ void ASE::DoPulse()
         return;
 
     sockaddr_in SockAddr;
-#ifndef WIN32
+#ifndef _WIN32
     socklen_t nLen = sizeof(sockaddr);
 #else
     int nLen = sizeof(sockaddr);
@@ -154,11 +154,9 @@ void ASE::DoPulse()
 
     char szBuffer[100];            // Extra bytes for future use
 
-    for (uint s = 0; s < m_SocketList.size(); s++)
+    for (auto& aseSocket : m_SocketList)
     {
-        SOCKET aseSocket = m_SocketList[s];
-
-        for (uint i = 0; i < 100; i++)
+        for (auto i = 0; i < 100; i++)
         {
             // We set the socket to non-blocking so we can just keep reading
             int iBuffer = recvfrom(aseSocket, szBuffer, sizeof(szBuffer), 0, (sockaddr*)&SockAddr, &nLen);
@@ -171,7 +169,7 @@ void ASE::DoPulse()
                 if (m_QueryDosProtect.AddConnect(inet_ntoa(SockAddr.sin_addr)))
                     continue;
 
-            const std::string* strReply = NULL;
+            const std::string* strReply = nullptr;
 
             switch (szBuffer[0])
             {
@@ -240,36 +238,36 @@ std::string ASE::QueryFull()
 
     reply << "EYE1";
     // game
-    reply << (unsigned char)4;
+    reply << (std::uint8_t)4;
     reply << "mta";
     // port
-    reply << (unsigned char)(m_strPort.length() + 1);
+    reply << (std::uint8_t)(m_strPort.length() + 1);
     reply << m_strPort;
     // server name
-    reply << (unsigned char)(m_pMainConfig->GetServerName().length() + 1);
+    reply << (std::uint8_t)(m_pMainConfig->GetServerName().length() + 1);
     reply << m_pMainConfig->GetServerName();
     // game type
-    reply << (unsigned char)(m_strGameType.length() + 1);
+    reply << (std::uint8_t)(m_strGameType.length() + 1);
     reply << m_strGameType;
     // map name
-    reply << (unsigned char)(m_strMapName.length() + 1);
+    reply << (std::uint8_t)(m_strMapName.length() + 1);
     reply << m_strMapName;
     // version
     temp << MTA_DM_ASE_VERSION;
-    reply << (unsigned char)(temp.str().length() + 1);
+    reply << (std::uint8_t)(temp.str().length() + 1);
     reply << temp.str();
     // passworded
-    reply << (unsigned char)2;
+    reply << (std::uint8_t)2;
     reply << ((m_pMainConfig->HasPassword()) ? 1 : 0);
     // players count
     temp.str("");
     temp << m_pPlayerManager->CountJoined();
-    reply << (unsigned char)(temp.str().length() + 1);
+    reply << (std::uint8_t)(temp.str().length() + 1);
     reply << temp.str();
     // players max
     temp.str("");
     temp << m_pMainConfig->GetMaxPlayers();
-    reply << (unsigned char)(temp.str().length() + 1);
+    reply << (std::uint8_t)(temp.str().length() + 1);
     reply << temp.str();
 
     // rules
@@ -277,17 +275,17 @@ std::string ASE::QueryFull()
     for (; rIter != IterEnd(); rIter++)
     {
         // maybe use a map and std strings for rules?
-        reply << (unsigned char)(strlen((*rIter)->GetKey()) + 1);
+        reply << (std::uint8_t)(strlen((*rIter)->GetKey()) + 1);
         reply << (*rIter)->GetKey();
-        reply << (unsigned char)(strlen((*rIter)->GetValue()) + 1);
+        reply << (std::uint8_t)(strlen((*rIter)->GetValue()) + 1);
         reply << (*rIter)->GetValue();
     }
-    reply << (unsigned char)1;
+    reply << (std::uint8_t)1;
 
     // players
 
     // the flags that tell what data we carry per player ( apparently we need all set cause of GM atm )
-    unsigned char ucFlags = 0;
+    std::uint8_t ucFlags = 0;
     ucFlags |= 0x01;            // nick
     ucFlags |= 0x02;            // team
     ucFlags |= 0x04;            // skin
@@ -309,22 +307,22 @@ std::string ASE::QueryFull()
             std::string strPlayerName = RemoveColorCodes(pPlayer->GetNick());
             if (strPlayerName.length() == 0)
                 strPlayerName = pPlayer->GetNick();
-            reply << (unsigned char)(strPlayerName.length() + 1);
+            reply << (std::uint8_t)(strPlayerName.length() + 1);
             reply << strPlayerName.c_str();
             // team (skip)
-            reply << (unsigned char)1;
+            reply << (std::uint8_t)1;
             // skin (skip)
-            reply << (unsigned char)1;
+            reply << (std::uint8_t)1;
             // score
             const std::string& strScore = pPlayer->GetAnnounceValue("score");
-            reply << (unsigned char)(strScore.length() + 1);
+            reply << (std::uint8_t)(strScore.length() + 1);
             reply << strScore.c_str();
             // ping
             snprintf(szTemp, 255, "%u", pPlayer->GetPing());
-            reply << (unsigned char)(strlen(szTemp) + 1);
+            reply << (std::uint8_t)(strlen(szTemp) + 1);
             reply << szTemp;
             // time (skip)
-            reply << (unsigned char)1;
+            reply << (std::uint8_t)1;
         }
     }
 
@@ -355,29 +353,29 @@ std::string ASE::QueryXfireLight()
 
     reply << "EYE3";
     // game
-    reply << (unsigned char)4;
+    reply << (std::uint8_t)4;
     reply << "mta";
     // server name
-    reply << (unsigned char)(m_pMainConfig->GetServerName().length() + 1);
+    reply << (std::uint8_t)(m_pMainConfig->GetServerName().length() + 1);
     reply << m_pMainConfig->GetServerName();
     // game type
-    reply << (unsigned char)(m_strGameType.length() + 1);
+    reply << (std::uint8_t)(m_strGameType.length() + 1);
     reply << m_strGameType;
     // map name with backwardly compatible large player count
-    reply << (unsigned char)(m_strMapName.length() + 1 + strPlayerCount.length() + 1);
+    reply << (std::uint8_t)(m_strMapName.length() + 1 + strPlayerCount.length() + 1);
     reply << m_strMapName;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strPlayerCount;
     // version
     std::string temp = MTA_DM_ASE_VERSION;
-    reply << (unsigned char)(temp.length() + 1);
+    reply << (std::uint8_t)(temp.length() + 1);
     reply << temp;
     // passworded
-    reply << (unsigned char)((m_pMainConfig->HasPassword()) ? 1 : 0);
+    reply << (std::uint8_t)((m_pMainConfig->HasPassword()) ? 1 : 0);
     // players count
-    reply << (unsigned char)std::min(iJoinedPlayers, 255);
+    reply << (std::uint8_t)std::min(iJoinedPlayers, 255);
     // players max
-    reply << (unsigned char)std::min(iMaxPlayers, 255);
+    reply << (std::uint8_t)std::min(iMaxPlayers, 255);
 
     return reply.str();
 }
@@ -410,56 +408,56 @@ std::string ASE::QueryLight()
     g_pNetServer->GetNetRoute(&strNetRouteFixed);
     SString strPingStatus = (const char*)strPingStatusFixed;
     SString strNetRoute = (const char*)strNetRouteFixed;
-    SString strUpTime("%d", (uint)(time(NULL) - m_tStartTime));
+    SString strUpTime("%d", (std::uint32_t)(time(NULL) - m_tStartTime));
     SString strHttpPort("%d", m_pMainConfig->GetHTTPPort());
 
-    uint uiExtraDataLength = (strPlayerCount.length() + 1 + strBuildType.length() + 1 + strBuildNumber.length() + 1 + strPingStatus.length() + 1 +
+    std::uint32_t uiExtraDataLength = (strPlayerCount.length() + 1 + strBuildType.length() + 1 + strBuildNumber.length() + 1 + strPingStatus.length() + 1 +
                               strNetRoute.length() + 1 + strUpTime.length() + 1 + strHttpPort.length() + 1);
-    uint uiMaxMapNameLength = 250 - uiExtraDataLength;
+    std::uint32_t uiMaxMapNameLength = 250 - uiExtraDataLength;
     m_strMapName = m_strMapName.Left(uiMaxMapNameLength);
 
     reply << "EYE2";
     // game
-    reply << (unsigned char)4;
+    reply << (std::uint8_t)4;
     reply << "mta";
     // port
-    reply << (unsigned char)(m_strPort.length() + 1);
+    reply << (std::uint8_t)(m_strPort.length() + 1);
     reply << m_strPort;
     // server name
-    reply << (unsigned char)(m_pMainConfig->GetServerName().length() + 1);
+    reply << (std::uint8_t)(m_pMainConfig->GetServerName().length() + 1);
     reply << m_pMainConfig->GetServerName();
     // game type
-    reply << (unsigned char)(m_strGameType.length() + 1);
+    reply << (std::uint8_t)(m_strGameType.length() + 1);
     reply << m_strGameType;
     // map name with backwardly compatible large player count, build type and build number
-    reply << (unsigned char)(m_strMapName.length() + 1 + uiExtraDataLength);
+    reply << (std::uint8_t)(m_strMapName.length() + 1 + uiExtraDataLength);
     reply << m_strMapName;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strPlayerCount;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strBuildType;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strBuildNumber;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strPingStatus;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strNetRoute;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strUpTime;
-    reply << (unsigned char)0;
+    reply << (std::uint8_t)0;
     reply << strHttpPort;
     // version
     std::string temp = MTA_DM_ASE_VERSION;
-    reply << (unsigned char)(temp.length() + 1);
+    reply << (std::uint8_t)(temp.length() + 1);
     reply << temp;
     // passworded
-    reply << (unsigned char)((m_pMainConfig->HasPassword()) ? 1 : 0);
+    reply << (std::uint8_t)((m_pMainConfig->HasPassword()) ? 1 : 0);
     // serial verification?
-    reply << (unsigned char)((m_pMainConfig->GetSerialVerificationEnabled()) ? 1 : 0);
+    reply << (std::uint8_t)((m_pMainConfig->GetSerialVerificationEnabled()) ? 1 : 0);
     // players count
-    reply << (unsigned char)std::min(iJoinedPlayers, 255);
+    reply << (std::uint8_t)std::min(iJoinedPlayers, 255);
     // players max
-    reply << (unsigned char)std::min(iMaxPlayers, 255);
+    reply << (std::uint8_t)std::min(iMaxPlayers, 255);
 
     // players
     CPlayer* pPlayer = NULL;
@@ -484,7 +482,7 @@ std::string ASE::QueryLight()
             if (iBytesLeft < iPlayersLeft--)
                 strPlayerName = "";
 
-            reply << (unsigned char)(strPlayerName.length() + 1);
+            reply << (std::uint8_t)(strPlayerName.length() + 1);
             reply << strPlayerName.c_str();
         }
     }

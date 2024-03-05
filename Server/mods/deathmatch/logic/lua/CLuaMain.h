@@ -70,12 +70,12 @@ public:
     bool          DestroyXML(CXMLNode* pRootNode);
     bool          SaveXML(CXMLNode* pRootNode);
     bool          XMLExists(CXMLFile* pFile);
-    std::uint32_t GetXMLFileCount() const { return m_XMLFiles.size(); };
-    std::uint32_t GetOpenFileCount() const { return m_OpenFilenameList.size(); };
+    std::size_t   GetXMLFileCount() const { return m_XMLFiles.size(); };
+    std::size_t   GetOpenFileCount() const { return m_OpenFilenameList.size(); };
     std::uint32_t GetTimerCount() const { return m_pLuaTimerManager ? m_pLuaTimerManager->GetTimerCount() : 0; };
     std::uint32_t GetElementCount() const;
-    std::uint32_t GetTextDisplayCount() const { return m_Displays.size(); };
-    std::uint32_t GetTextItemCount() const { return m_TextItems.size(); };
+    std::size_t   GetTextDisplayCount() const { return m_Displays.size(); };
+    std::size_t   GetTextItemCount() const { return m_TextItems.size(); };
     void          OnOpenFile(const SString& strFilename);
     void          OnCloseFile(const SString& strFilename);
 
@@ -89,14 +89,14 @@ public:
     CTextItem*    GetTextItemFromScriptID(std::uint32_t uiScriptID);
 
     bool       BeingDeleted();
-    lua_State* GetVirtualMachine() const { return m_luaVM; };
+    lua_State* GetVirtualMachine() const noexcept { return m_luaVM; };
 
     void ResetInstructionCount();
 
-    CResource* GetResource() { return m_pResource; }
+    CResource* GetResource() const noexcept { return m_pResource; }
 
-    void           SetResourceFile(class CResourceFile* resourceFile) { m_pResourceFile = resourceFile; }
-    CResourceFile* GetResourceFile() { return m_pResourceFile; }
+    void           SetResourceFile(class CResourceFile* resourceFile) noexcept { m_pResourceFile = resourceFile; }
+    CResourceFile* GetResourceFile() noexcept { return m_pResourceFile; }
 
     void RegisterHTMLDFunctions();
 
@@ -114,7 +114,7 @@ private:
     void InitClasses(lua_State* luaVM);
 
 public:
-    bool IsOOPEnabled() { return m_bEnableOOP; }
+    bool IsOOPEnabled() const noexcept { return m_bEnableOOP; }
 
 private:
     static void InstructionCountHook(lua_State* luaVM, lua_Debug* pDebug);

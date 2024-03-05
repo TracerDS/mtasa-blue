@@ -31,9 +31,9 @@ void CLuaBitDefs::LoadFunctions()
 
 int CLuaBitDefs::bitAnd(lua_State* luaVM)
 {
-    //  uint bitAnd ( uint var1, uint var2, ... )
-    uint uiVar1;
-    uint uiVar2;
+    //  std::uint32_t bitAnd ( std::uint32_t var1, std::uint32_t var2, ... )
+    std::uint32_t uiVar1;
+    std::uint32_t uiVar2;
 
     CScriptArgReader argStream(luaVM);
     argStream.ReadNumber(uiVar1, false);
@@ -41,10 +41,10 @@ int CLuaBitDefs::bitAnd(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult = uiVar1 & uiVar2;
+        std::uint32_t uiResult = uiVar1 & uiVar2;
         while (argStream.NextIsNumber())
         {
-            uint uiVar;
+            std::uint32_t uiVar;
             argStream.ReadNumber(uiVar, false);
 
             uiResult &= uiVar;
@@ -62,8 +62,8 @@ int CLuaBitDefs::bitAnd(lua_State* luaVM)
 
 int CLuaBitDefs::bitNot(lua_State* luaVM)
 {
-    //  uint bitNot ( uint var )
-    uint uiVar;
+    //  std::uint32_t bitNot ( std::uint32_t var )
+    std::uint32_t uiVar;
 
     CScriptArgReader argStream(luaVM);
     argStream.ReadNumber(uiVar, false);
@@ -82,9 +82,9 @@ int CLuaBitDefs::bitNot(lua_State* luaVM)
 
 int CLuaBitDefs::bitOr(lua_State* luaVM)
 {
-    //  uint bitOr ( uint var1, uint var2, ... )
-    uint uiVar1;
-    uint uiVar2;
+    //  std::uint32_t bitOr ( std::uint32_t var1, std::uint32_t var2, ... )
+    std::uint32_t uiVar1;
+    std::uint32_t uiVar2;
 
     CScriptArgReader argStream(luaVM);
     argStream.ReadNumber(uiVar1, false);
@@ -92,10 +92,10 @@ int CLuaBitDefs::bitOr(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult = uiVar1 | uiVar2;
+        std::uint32_t uiResult = uiVar1 | uiVar2;
         while (argStream.NextIsNumber())
         {
-            uint uiVar;
+            std::uint32_t uiVar;
             argStream.ReadNumber(uiVar, false);
 
             uiResult |= uiVar;
@@ -113,9 +113,9 @@ int CLuaBitDefs::bitOr(lua_State* luaVM)
 
 int CLuaBitDefs::bitTest(lua_State* luaVM)
 {
-    //  uint bitTest ( uint var1, uint var2, ... )
-    uint uiVar1;
-    uint uiVar2;
+    //  std::uint32_t bitTest ( std::uint32_t var1, std::uint32_t var2, ... )
+    std::uint32_t uiVar1;
+    std::uint32_t uiVar2;
 
     CScriptArgReader argStream(luaVM);
     argStream.ReadNumber(uiVar1, false);
@@ -123,10 +123,10 @@ int CLuaBitDefs::bitTest(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult = uiVar1 & uiVar2;
+        std::uint32_t uiResult = uiVar1 & uiVar2;
         while (argStream.NextIsNumber())
         {
-            uint uiVar;
+            std::uint32_t uiVar;
             argStream.ReadNumber(uiVar, false);
 
             uiResult &= uiVar;
@@ -145,9 +145,9 @@ int CLuaBitDefs::bitTest(lua_State* luaVM)
 
 int CLuaBitDefs::bitXor(lua_State* luaVM)
 {
-    //  uint bitXor ( uint var1, uint var2 )
-    uint uiVar1;
-    uint uiVar2;
+    //  std::uint32_t bitXor ( std::uint32_t var1, std::uint32_t var2 )
+    std::uint32_t uiVar1;
+    std::uint32_t uiVar2;
 
     CScriptArgReader argStream(luaVM);
     argStream.ReadNumber(uiVar1, false);
@@ -155,10 +155,10 @@ int CLuaBitDefs::bitXor(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult = uiVar1 ^ uiVar2;
+        std::uint32_t uiResult = uiVar1 ^ uiVar2;
         while (argStream.NextIsNumber())
         {
-            uint uiVar;
+            std::uint32_t uiVar;
             argStream.ReadNumber(uiVar, false);
 
             uiResult ^= uiVar;
@@ -176,8 +176,8 @@ int CLuaBitDefs::bitXor(lua_State* luaVM)
 
 int CLuaBitDefs::bitLRotate(lua_State* luaVM)
 {
-    //  uint bitLRotate ( uint var, int disp )
-    uint uiVar;
+    //  std::uint32_t bitLRotate ( std::uint32_t var, int disp )
+    std::uint32_t uiVar;
     int  iDisp;
 
     CScriptArgReader argStream(luaVM);
@@ -187,7 +187,7 @@ int CLuaBitDefs::bitLRotate(lua_State* luaVM)
     if (!argStream.HasErrors())
     {
         iDisp &= (32 - 1);            // iDisp %= 32
-        uint uiResult = (uiVar << iDisp) | (uiVar >> (32 - iDisp));
+        std::uint32_t uiResult = (uiVar << iDisp) | (uiVar >> (32 - iDisp));
 
         lua_pushnumber(luaVM, uiResult);
         return 1;
@@ -201,8 +201,8 @@ int CLuaBitDefs::bitLRotate(lua_State* luaVM)
 
 int CLuaBitDefs::bitRRotate(lua_State* luaVM)
 {
-    //  uint bitRRotate ( uint var, int disp )
-    uint uiVar;
+    //  std::uint32_t bitRRotate ( std::uint32_t var, int disp )
+    std::uint32_t uiVar;
     int  iDisp;
 
     CScriptArgReader argStream(luaVM);
@@ -212,7 +212,7 @@ int CLuaBitDefs::bitRRotate(lua_State* luaVM)
     if (!argStream.HasErrors())
     {
         iDisp &= (32 - 1);            // iDisp %= 32
-        uint uiResult = (uiVar >> iDisp) | (uiVar << (32 - iDisp));
+        std::uint32_t uiResult = (uiVar >> iDisp) | (uiVar << (32 - iDisp));
 
         lua_pushnumber(luaVM, uiResult);
         return 1;
@@ -226,8 +226,8 @@ int CLuaBitDefs::bitRRotate(lua_State* luaVM)
 
 int CLuaBitDefs::bitLShift(lua_State* luaVM)
 {
-    //  uint bitLShift ( uint var, int disp )
-    uint uiVar;
+    //  std::uint32_t bitLShift ( std::uint32_t var, int disp )
+    std::uint32_t uiVar;
     int  iDisp;
 
     CScriptArgReader argStream(luaVM);
@@ -236,7 +236,7 @@ int CLuaBitDefs::bitLShift(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult;
+        std::uint32_t uiResult;
 
         if (iDisp >= 32)
             uiResult = 0;
@@ -255,8 +255,8 @@ int CLuaBitDefs::bitLShift(lua_State* luaVM)
 
 int CLuaBitDefs::bitRShift(lua_State* luaVM)
 {
-    //  uint bitRShift ( uint var, int disp )
-    uint uiVar;
+    //  std::uint32_t bitRShift ( std::uint32_t var, int disp )
+    std::uint32_t uiVar;
     int  iDisp;
 
     CScriptArgReader argStream(luaVM);
@@ -265,7 +265,7 @@ int CLuaBitDefs::bitRShift(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult;
+        std::uint32_t uiResult;
 
         if (iDisp >= 32)
             uiResult = 0;
@@ -284,8 +284,8 @@ int CLuaBitDefs::bitRShift(lua_State* luaVM)
 
 int CLuaBitDefs::bitArShift(lua_State* luaVM)
 {
-    //  uint bitArShift ( uint var, int disp )
-    uint uiVar;
+    //  std::uint32_t bitArShift ( std::uint32_t var, int disp )
+    std::uint32_t uiVar;
     int  iDisp;
 
     CScriptArgReader argStream(luaVM);
@@ -294,9 +294,9 @@ int CLuaBitDefs::bitArShift(lua_State* luaVM)
 
     if (!argStream.HasErrors())
     {
-        uint uiResult;
+        std::uint32_t uiResult;
 
-        if (iDisp < 0 || !(uiVar & ((uint)1 << (32 - 1))))
+        if (iDisp < 0 || !(uiVar & ((std::uint32_t)1 << (32 - 1))))
         {
             if (iDisp <= -32 || iDisp >= 32)
                 uiResult = 0;
@@ -315,7 +315,7 @@ int CLuaBitDefs::bitArShift(lua_State* luaVM)
         if (iDisp >= 32)
             uiResult = 0xFFFFFFFF;
         else
-            uiResult = (uiVar >> iDisp) | ~(~(uint)0 >> iDisp);
+            uiResult = (uiVar >> iDisp) | ~(~(std::uint32_t)0 >> iDisp);
 
         lua_pushnumber(luaVM, uiResult);
         return 1;
@@ -329,8 +329,8 @@ int CLuaBitDefs::bitArShift(lua_State* luaVM)
 
 int CLuaBitDefs::bitExtract(lua_State* luaVM)
 {
-    //  uint bitExtract ( uint var, int field, int width = 1 )
-    uint uiVar;
+    //  std::uint32_t bitExtract ( std::uint32_t var, int field, int width = 1 )
+    std::uint32_t uiVar;
     int  iField;
     int  iWidth;
 
@@ -366,9 +366,9 @@ int CLuaBitDefs::bitExtract(lua_State* luaVM)
 
 int CLuaBitDefs::bitReplace(lua_State* luaVM)
 {
-    //  uint bitReplace ( uint var, uint replaceValue, int field, int width = 1 )
-    uint uiVar;
-    uint uiReplaceValue;
+    //  std::uint32_t bitReplace ( std::uint32_t var, std::uint32_t replaceValue, int field, int width = 1 )
+    std::uint32_t uiVar;
+    std::uint32_t uiReplaceValue;
     int  iField;
     int  iWidth;
 

@@ -464,7 +464,7 @@ bool SString::BeginsWithI(const SString& strOther) const
 SString SString::Join(const SString& strDelim, const std::vector<SString>& parts, int iFirst, int iCount)
 {
     SString strResult;
-    int     iLast = std::min<int>(iFirst + iCount, parts.size()) - 1;
+    auto    iLast = std::min<std::size_t>(iFirst + iCount, parts.size()) - 1;
     iFirst = std::max<int>(iFirst, 0);
     for (int i = iFirst; i <= iLast; i++)
     {

@@ -101,7 +101,7 @@ class SStringX : public SString
 {
 public:
     SStringX(const char* szText) noexcept : SString(std::string(szText ? szText : "")) {}
-    SStringX(const char* szText, std::uint32_t uiLength) noexcept : SString(std::string(szText ? szText : "", uiLength)) {}
+    SStringX(const char* szText, std::size_t uiLength) noexcept : SString(std::string(szText ? szText : "", uiLength)) {}
 };
 
 //

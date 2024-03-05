@@ -25,15 +25,15 @@ public:
     CBan* AddBan(CPlayer* pPlayer, const SString& strBanner = "Console", const SString& strReason = "", time_t tTimeOfUnban = 0);
     CBan* AddBan(const SString& strIP, const SString& strBanner = "Console", const SString& strReason = "", time_t tTimeOfUnban = 0);
 
-    CBan* AddSerialBan(CPlayer* pPlayer, CClient* pBanner = NULL, const SString& strReason = "", time_t tTimeOfUnban = 0);
-    CBan* AddSerialBan(const SString& strSerial, CClient* pBanner = NULL, const SString& strReason = "", time_t tTimeOfUnban = 0);
+    CBan* AddSerialBan(CPlayer* pPlayer, CClient* pBanner = nullptr, const SString& strReason = "", time_t tTimeOfUnban = 0);
+    CBan* AddSerialBan(const SString& strSerial, CClient* pBanner = nullptr, const SString& strReason = "", time_t tTimeOfUnban = 0);
 
-    CBan* AddAccountBan(CPlayer* pPlayer, CClient* pBanner = NULL, const SString& strReason = "", time_t tTimeOfUnban = 0);
-    CBan* AddAccountBan(const SString& szAccount, CClient* pBanner = NULL, const SString& strReason = "", time_t tTimeOfUnban = 0);
+    CBan* AddAccountBan(CPlayer* pPlayer, CClient* pBanner = nullptr, const SString& strReason = "", time_t tTimeOfUnban = 0);
+    CBan* AddAccountBan(const SString& szAccount, CClient* pBanner = nullptr, const SString& strReason = "", time_t tTimeOfUnban = 0);
 
     CBan* AddBan(const SString& strBanner = "Console", const SString& strReason = "", time_t tTimeOfUnban = 0);
 
-    CBan* GetBanFromScriptID(uint uiScriptID);
+    CBan* GetBanFromScriptID(std::uint32_t uiScriptID);
 
     bool  IsSpecificallyBanned(const char* szIP);
     bool  IsSerialBanned(const char* szSerial);
@@ -44,17 +44,20 @@ public:
     CBan* GetBanFromSerial(const char* szSerial);
     CBan* GetBanFromIP(const char* szIP);
 
-    unsigned int GetBansWithNick(const char* szNick);
-    unsigned int GetBansWithBanner(const char* szBanner);
+    std::uint32_t GetBansWithNick(const char* szNick);
+    std::uint32_t GetBansWithBanner(const char* szBanner);
 
     bool        LoadBanList();
     bool        ReloadBanList();
     void        SaveBanList();
     void        SafeSetValue(CXMLNode* pNode, const char* szKey, const std::string& strValue);
-    void        SafeSetValue(CXMLNode* pNode, const char* szKey, unsigned int);
+    void        SafeSetValue(CXMLNode* pNode, const char* szKey, std::uint32_t);
     std::string SafeGetValue(CXMLNode* pNode, const char* szKey);
     bool        IsValidIP(const char* szIP);
-    static void SetBansModified() { ms_bSaveRequired = true; }
+    static void SetBansModified() noexcept { ms_bSaveRequired = true; }
+
+    CMappedList<CBan*>& GetBans() noexcept { return m_BanManager; }
+    const CMappedList<CBan*>& GetBans() const noexcept { return m_BanManager; }
 
     list<CBan*>::const_iterator IterBegin() { return m_BanManager.begin(); };
     list<CBan*>::const_iterator IterEnd() { return m_BanManager.end(); };

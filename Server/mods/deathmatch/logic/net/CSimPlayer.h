@@ -13,10 +13,10 @@
 
 struct SSimVehicleDamageInfo
 {
-    SFixedArray<unsigned char, MAX_DOORS>  m_ucDoorStates;
-    SFixedArray<unsigned char, MAX_WHEELS> m_ucWheelStates;
-    SFixedArray<unsigned char, MAX_PANELS> m_ucPanelStates;
-    SFixedArray<unsigned char, MAX_LIGHTS> m_ucLightStates;
+    SFixedArray<std::uint8_t, MAX_DOORS>  m_ucDoorStates;
+    SFixedArray<std::uint8_t, MAX_WHEELS> m_ucWheelStates;
+    SFixedArray<std::uint8_t, MAX_PANELS> m_ucPanelStates;
+    SFixedArray<std::uint8_t, MAX_LIGHTS> m_ucLightStates;
 };
 
 //
@@ -26,20 +26,21 @@ class CSimPlayer
 {
 public:
     ZERO_ON_NEW
-    CSimPlayer() { DEBUG_CREATE_COUNT("CSimPlayer"); }
-    ~CSimPlayer() { DEBUG_DESTROY_COUNT("CSimPlayer"); }
+    CSimPlayer() noexcept { DEBUG_CREATE_COUNT("CSimPlayer"); }
+    ~CSimPlayer() noexcept { DEBUG_DESTROY_COUNT("CSimPlayer"); }
 
-    bool                                      IsJoined() { return m_bIsJoined; };
-    const std::multimap<ushort, CSimPlayer*>& GetPuresyncSendList();
-    unsigned short                            GetBitStreamVersion() { return m_usBitStreamVersion; };
-    NetServerPlayerID&                        GetSocket() { return m_PlayerSocket; };
+    const std::multimap<std::uint16_t, CSimPlayer*>& GetPuresyncSendList();
+
+    bool               IsJoined() const noexcept { return m_bIsJoined; };
+    std::uint16_t      GetBitStreamVersion() const noexcept { return m_usBitStreamVersion; };
+    NetServerPlayerID& GetSocket() noexcept { return m_PlayerSocket; };
 
     // General synced vars
     bool                               m_bIsJoined;
-    unsigned short                     m_usBitStreamVersion;
+    std::uint16_t                      m_usBitStreamVersion;
     NetServerPlayerID                  m_PlayerSocket;
     std::vector<CSimPlayer*>           m_PuresyncSendListFlat;
-    std::multimap<ushort, CSimPlayer*> m_PuresyncSendListGrouped;            // Send list grouped by bitstream version
+    std::multimap<std::uint16_t, CSimPlayer*> m_PuresyncSendListGrouped;            // Send list grouped by bitstream version
     bool                               m_bSendListChanged;
     bool                               m_bHasOccupiedVehicle;
     bool                               m_bIsExitingVehicle;
@@ -47,15 +48,15 @@ public:
 
     // Used in CSimPlayerPuresyncPacket and CSimVehiclePuresyncPacket
     ElementID m_PlayerID;
-    ushort    m_usLatency;
-    uchar     m_ucSyncTimeContext;
-    uchar     m_ucWeaponType;
+    std::uint16_t m_usLatency;
+    std::uint8_t  m_ucSyncTimeContext;
+    std::uint8_t  m_ucWeaponType;
 
     // Used in CSimVehiclePuresyncPacket
-    ushort                m_usVehicleModel;
-    uchar                 m_ucOccupiedVehicleSeat;
+    std::uint16_t         m_usVehicleModel;
+    std::uint8_t          m_ucOccupiedVehicleSeat;
     float                 m_fWeaponRange;
-    uint                  m_uiVehicleDamageInfoSendPhase;
+    std::uint32_t         m_uiVehicleDamageInfoSendPhase;
     SSimVehicleDamageInfo m_VehicleDamageInfo;
 
     // Used in CSimKeysyncPacket

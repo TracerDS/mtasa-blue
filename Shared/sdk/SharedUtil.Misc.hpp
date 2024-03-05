@@ -1397,7 +1397,7 @@ SString SharedUtil::RemoveColorCodes(const char* szString)
 //
 void SharedUtil::RemoveColorCodesInPlaceW(WString& strText)
 {
-    std::uint32_t uiSearchPos = 0;
+    std::size_t uiSearchPos = 0;
     while (true)
     {
         std::wstring::size_type uiFoundPos = strText.find(L'#', uiSearchPos);
@@ -1556,8 +1556,8 @@ bool SharedUtil::IsLuaObfuscatedScript(const void* pData, std::uint32_t uiLength
 bool SharedUtil::IsValidVersionString(const SString& strVersion)
 {
     const SString strCheck = "0.0.0-0.00000.0.000";
-    std::uint32_t          uiLength = std::min(strCheck.length(), strVersion.length());
-    for (std::uint32_t i = 0; i < uiLength; i++)
+    auto uiLength = std::min(strCheck.length(), strVersion.length());
+    for (auto i = 0; i < uiLength; i++)
     {
         std::uint8_t c = strVersion[i];
         std::uint8_t d = strCheck[i];

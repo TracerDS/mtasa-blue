@@ -35,8 +35,8 @@ public:
     // CPerfStatManagerImpl
     void             AddModule(CPerfStatModule* pModule);
     void             RemoveModule(CPerfStatModule* pModule);
-    uint             GetModuleCount();
-    CPerfStatModule* GetModuleByIndex(uint uiIndex);
+    std::size_t      GetModuleCount();
+    CPerfStatModule* GetModuleByIndex(std::uint32_t uiIndex);
     CPerfStatModule* GetModuleByCategoryName(const SString& strCategory);
 
     std::vector<CPerfStatModule*> m_ModuleList;
@@ -146,7 +146,7 @@ void CPerfStatManagerImpl::RemoveModule(CPerfStatModule* pModule)
 //
 //
 ///////////////////////////////////////////////////////////////
-uint CPerfStatManagerImpl::GetModuleCount()
+std::size_t CPerfStatManagerImpl::GetModuleCount()
 {
     return m_ModuleList.size();
 }
@@ -158,11 +158,9 @@ uint CPerfStatManagerImpl::GetModuleCount()
 //
 //
 ///////////////////////////////////////////////////////////////
-CPerfStatModule* CPerfStatManagerImpl::GetModuleByIndex(uint uiIndex)
+CPerfStatModule* CPerfStatManagerImpl::GetModuleByIndex(std::uint32_t uiIndex)
 {
-    if (uiIndex < m_ModuleList.size())
-        return m_ModuleList[uiIndex];
-    return NULL;
+    return uiIndex < m_ModuleList.size() ? m_ModuleList[uiIndex] : nullptr;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -174,13 +172,13 @@ CPerfStatModule* CPerfStatManagerImpl::GetModuleByIndex(uint uiIndex)
 ///////////////////////////////////////////////////////////////
 CPerfStatModule* CPerfStatManagerImpl::GetModuleByCategoryName(const SString& strCategory)
 {
-    for (uint i = 0; i < GetModuleCount(); i++)
+    for (auto i = 0; i < GetModuleCount(); i++)
     {
         CPerfStatModule* pModule = GetModuleByIndex(i);
         if (pModule->GetCategoryName() == strCategory)
             return pModule;
     }
-    return NULL;
+    return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -192,7 +190,7 @@ CPerfStatModule* CPerfStatManagerImpl::GetModuleByCategoryName(const SString& st
 ///////////////////////////////////////////////////////////////
 void CPerfStatManagerImpl::DoPulse()
 {
-    for (uint i = 0; i < GetModuleCount(); i++)
+    for (auto i = 0; i < GetModuleCount(); i++)
     {
         CPerfStatModule* pModule = GetModuleByIndex(i);
         pModule->DoPulse();
@@ -214,7 +212,7 @@ void CPerfStatManagerImpl::GetStats(CPerfStatResult* pResult, const SString& str
     {
         // List all modules
         pResult->AddColumn("Categories");
-        for (uint i = 0; i < GetModuleCount(); i++)
+        for (std::uint32_t i = 0; i < GetModuleCount(); i++)
         {
             CPerfStatModule* pModule = GetModuleByIndex(i);
             pResult->AddRow()[0] = pModule->GetCategoryName();

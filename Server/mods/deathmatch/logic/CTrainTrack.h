@@ -18,27 +18,28 @@ struct STrackNode
     CVector position;
     float   railDistance;
 
-    STrackNode(std::int16_t x, std::int16_t y, std::int16_t z, std::uint16_t distance)
+    STrackNode() noexcept {}
+    STrackNode(std::int16_t x, std::int16_t y, std::int16_t z, std::uint16_t distance) noexcept
     {
         position.fX = 8.0f * x;
         position.fY = 8.0f * y;
         position.fZ = 8.0f * z;
-        railDistance = 3.0f * distance;            // TODO(Jusonex, feature/custom-train-tracks/9063a3dc080): Remove distance
+        railDistance = 3.0f * distance;
+        // TODO(Jusonex, feature/custom-train-tracks/9063a3dc080): Remove distance
     }
 
-    STrackNode(const CVector& pos) : position(pos) {}
-    STrackNode() {}
+    STrackNode(const CVector& pos) noexcept : position(pos) {}
 };
 
 class CTrainTrack final : public CElement
 {
 public:
-    CTrainTrack(CTrainTrackManager* pManager, const std::vector<STrackNode>& nodes, bool linkLastNodes, CElement* pParent, uchar defaultTrackId = 0xFF);
+    CTrainTrack(CTrainTrackManager* pManager, const std::vector<STrackNode>& nodes, bool linkLastNodes, CElement* pParent, std::uint8_t defaultTrackId = 0xFF);
     // TODO: Add move constructor
     virtual ~CTrainTrack();
 
-    bool SetTrackNodePosition(uint nodeIndex, const CVector& position);
-    bool GetTrackNodePosition(uint nodeIndex, CVector& position);
+    bool SetTrackNodePosition(std::uint32_t nodeIndex, const CVector& position);
+    bool GetTrackNodePosition(std::uint32_t nodeIndex, CVector& position);
 
     const std::vector<STrackNode>& GetNodes() const { return m_Nodes; }
     std::size_t                    GetNumberOfNodes() const { return m_Nodes.size(); }
@@ -47,7 +48,7 @@ public:
     bool GetLastNodesLinked() { return m_LinkLastNodes; }
 
     bool  IsDefault() { return m_DefaultTrackId != 0xFF; }
-    uchar GetDefaultTrackId() { return m_DefaultTrackId; }
+    std::uint8_t GetDefaultTrackId() { return m_DefaultTrackId; }
 
     virtual void Unlink() override {}
     bool         ReadSpecialData(const int iLine) override { return false; }
@@ -58,5 +59,5 @@ private:
     std::vector<STrackNode> m_Nodes;
     bool                    m_LinkLastNodes;
     bool                    m_Default;
-    uchar                   m_DefaultTrackId;
+    std::uint8_t            m_DefaultTrackId;
 };

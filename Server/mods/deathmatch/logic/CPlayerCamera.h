@@ -26,8 +26,8 @@ enum eCameraMode
 class CPlayerCamera
 {
 public:
-    CPlayerCamera(CPlayer* pPlayer);
-    ~CPlayerCamera();
+    CPlayerCamera(CPlayer* pPlayer) noexcept;
+    ~CPlayerCamera() noexcept;
 
     eCameraMode GetMode() const { return m_Mode; }
     void        SetMode(eCameraMode Mode);
@@ -41,33 +41,33 @@ public:
 
     void SetMatrix(const CVector& vecPosition, const CVector& vecLookAt);
 
-    CElement* GetTarget() const { return m_pTarget; }
+    CElement* GetTarget() const noexcept { return m_pTarget; }
     void      SetTarget(CElement* pElement);
 
-    float GetRoll() const { return m_fRoll; }
-    void  SetRoll(float fRoll) { m_fRoll = fRoll; }
-    float GetFOV() const { return m_fFOV; }
-    void  SetFOV(float fFOV) { m_fFOV = fFOV; }
+    float GetRoll() const noexcept { return m_fRoll; }
+    void  SetRoll(float fRoll) noexcept { m_fRoll = fRoll; }
+    float GetFOV() const noexcept { return m_fFOV; }
+    void  SetFOV(float fFOV) noexcept { m_fFOV = fFOV; }
 
     void SetRotation(CVector& vecRotation);
 
-    unsigned char GetInterior() const { return m_ucInterior; }
-    void          SetInterior(unsigned char ucInterior) { m_ucInterior = ucInterior; }
+    std::uint8_t GetInterior() const noexcept { return m_ucInterior; }
+    void         SetInterior(std::uint8_t ucInterior) noexcept { m_ucInterior = ucInterior; }
 
-    CPlayer* GetPlayer() const { return m_pPlayer; }
+    CPlayer* GetPlayer() const noexcept { return m_pPlayer; }
 
-    uchar GenerateSyncTimeContext();
-    bool  CanUpdateSync(uchar ucRemote);
+    std::uint8_t GenerateSyncTimeContext();
+    bool  CanUpdateSync(std::uint8_t ucRemote);
 
 private:
     CPlayer*      m_pPlayer;
     eCameraMode   m_Mode;
     float         m_fRotation;
-    unsigned char m_ucInterior;
+    std::uint8_t  m_ucInterior;
     CVector       m_vecPosition;
     CVector       m_vecLookAt;
     CElement*     m_pTarget;
     float         m_fRoll;
     float         m_fFOV;
-    uchar         m_ucSyncTimeContext;
+    std::uint8_t  m_ucSyncTimeContext;
 };

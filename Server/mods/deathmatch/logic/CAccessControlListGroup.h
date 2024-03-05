@@ -27,20 +27,22 @@ public:
     };
 
 public:
-    explicit CAccessControlListGroupObject(const char* szName, EObjectType eObjectType)
+    explicit CAccessControlListGroupObject(const char* szName, EObjectType eObjectType) noexcept 
     {
         m_strKey = GenerateKey(szName, eObjectType);
         m_strName = szName;
         m_eObjectType = eObjectType;
     }
 
-    virtual ~CAccessControlListGroupObject(){};
+    virtual ~CAccessControlListGroupObject() noexcept {};
 
-    static SString GenerateKey(const char* szName, EObjectType eObjectType) { return SString("%s_%d", szName, (unsigned int)eObjectType); }
+    static SString GenerateKey(const char* szName, EObjectType eObjectType) noexcept {
+        return SString("%s_%d", szName, (std::uint32_t)eObjectType);
+    }
 
-    const char*    GetObjectName() { return m_strName; };
-    EObjectType    GetObjectType() { return m_eObjectType; };
-    const SString& GetObjectKey() { return m_strKey; };
+    const char*    GetObjectName() const noexcept { return m_strName; };
+    EObjectType    GetObjectType() const noexcept { return m_eObjectType; };
+    const SString& GetObjectKey() const noexcept { return m_strKey; };
 
 private:
     SString     m_strName;
@@ -50,11 +52,14 @@ private:
 
 class CAccessControlListGroup
 {
+    using ACLsList = std::list<class CAccessControlList*>;
+    using ObjectList = std::list<class CAccessControlListGroupObject*>;
+    using ObjectMap = CFastHashMap<SString, class CAccessControlListGroupObject*>;
 public:
     CAccessControlListGroup(const char* szGroupName);
     ~CAccessControlListGroup();
 
-    const char* GetGroupName() { return m_strGroupName; };
+    const char* GetGroupName() const noexcept { return m_strGroupName; };
 
     CAccessControlListGroupObject* AddObject(const char* szObjectName, CAccessControlListGroupObject::EObjectType eObjectType);
     bool                           FindObjectMatch(const char* szObjectName, CAccessControlListGroupObject::EObjectType eObjectType);
@@ -65,28 +70,25 @@ public:
     class CAccessControlList* GetACL(const char* szACLName);
     void                      RemoveACL(class CAccessControlList* pACL);
 
+    ACLsList &GetACL() noexcept { return m_ACLs; }
+    const ACLsList& GetACL() const noexcept { return m_ACLs; }
+
     std::list<class CAccessControlList*>::iterator            IterBeginACL() { return m_ACLs.begin(); };
     std::list<class CAccessControlList*>::iterator            IterEndACL() { return m_ACLs.end(); };
     std::list<class CAccessControlListGroupObject*>::iterator IterBeginObjects() { return m_Objects.begin(); };
     std::list<class CAccessControlListGroupObject*>::iterator IterEndObjects() { return m_Objects.end(); };
 
     void WriteToXMLNode(CXMLNode* pNode);
-    uint GetScriptID() const { return m_uiScriptID; }
+    std::uint32_t GetScriptID() const noexcept { return m_uiScriptID; }
 
 private:
     void OnChange();
-
-    typedef std::list<class CAccessControlList*> ACLsList;
-
-    typedef std::list<class CAccessControlListGroupObject*> ObjectList;
-
-    typedef CFastHashMap<SString, class CAccessControlListGroupObject*> ObjectMap;
 
     SString m_strGroupName;
 
     ACLsList m_ACLs;
 
-    ObjectList m_Objects;
-    ObjectMap  m_ObjectsById;
-    uint       m_uiScriptID;
+    ObjectList    m_Objects;
+    ObjectMap     m_ObjectsById;
+    std::uint32_t m_uiScriptID;
 };

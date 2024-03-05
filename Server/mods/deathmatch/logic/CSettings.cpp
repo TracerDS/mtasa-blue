@@ -116,7 +116,7 @@ CXMLNode* CSettings::Get(CXMLNode* pSource, CXMLNode* pStorage, const char* szSo
     while ((pNode = pSource->FindSubNode("setting", uiCurrentIndex++)))
     {
         std::string  strContent;
-        unsigned int uiResourceNameLength = 0;
+        auto uiResourceNameLength = 0;
 
         CXMLAttribute* pName = pNode->GetAttributes().Find("name");
         CXMLAttribute* pValue = pNode->GetAttributes().Find(strAttribute);

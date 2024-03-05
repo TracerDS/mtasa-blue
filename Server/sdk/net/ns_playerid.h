@@ -11,59 +11,60 @@
 
 #pragma once
 
-#include <MTAPlatform.h>
+#include "../../../Shared/sdk/SharedUtil.Misc.h"
 
 class SNetExtraInfo : public CRefCountable
 {
 protected:
     SNetExtraInfo(const SNetExtraInfo&);
+    ~SNetExtraInfo() noexcept {}
+
     const SNetExtraInfo& operator=(const SNetExtraInfo&);
-    ~SNetExtraInfo() {}
 
 public:
     ZERO_ON_NEW
-    SNetExtraInfo() {}
+    SNetExtraInfo() noexcept {}
 
     bool m_bHasPing;
-    uint m_uiPing;
+    std::uint32_t m_uiPing;
 };
 
 class NetServerPlayerID
 {
 protected:
-    unsigned long  m_uiBinaryAddress;
-    unsigned short m_usPort;
+    std::uint32_t m_uiBinaryAddress;
+    std::uint16_t m_usPort;
 
 public:
-    NetServerPlayerID()
+    NetServerPlayerID() noexcept
     {
         m_uiBinaryAddress = 0xFFFFFFFF;
         m_usPort = 0xFFFF;
-    };
+    }
 
-    NetServerPlayerID(unsigned long uiBinaryAddress, unsigned short usPort)
+    NetServerPlayerID(std::uint32_t uiBinaryAddress, std::uint16_t usPort) noexcept
     {
         m_uiBinaryAddress = uiBinaryAddress;
         m_usPort = usPort;
-    };
+    }
 
-    ~NetServerPlayerID(){};
+    ~NetServerPlayerID() noexcept {}
 
-    friend inline int operator==(const NetServerPlayerID& left, const NetServerPlayerID& right)
+    friend inline int operator==(const NetServerPlayerID& left, const NetServerPlayerID& right) noexcept
     {
         return left.m_uiBinaryAddress == right.m_uiBinaryAddress && left.m_usPort == right.m_usPort;
-    };
+    }
 
-    friend inline int operator!=(const NetServerPlayerID& left, const NetServerPlayerID& right)
+    friend inline int operator!=(const NetServerPlayerID& left, const NetServerPlayerID& right) noexcept
     {
         return ((left.m_uiBinaryAddress != right.m_uiBinaryAddress) || (left.m_usPort != right.m_usPort));
-    };
+    }
 
-    friend inline bool operator<(const NetServerPlayerID& left, const NetServerPlayerID& right)
+    friend inline bool operator<(const NetServerPlayerID& left, const NetServerPlayerID& right) noexcept
     {
         return left.m_uiBinaryAddress < right.m_uiBinaryAddress || (left.m_uiBinaryAddress == right.m_uiBinaryAddress && left.m_usPort < right.m_usPort);
     }
 
-    unsigned long  GetBinaryAddress() const { return m_uiBinaryAddress; };
-    unsigned short GetPort() const { return m_usPort; };
+    std::uint32_t GetBinaryAddress() const noexcept { return m_uiBinaryAddress; };
+    std::uint16_t GetPort() const noexcept { return m_usPort; };
 };

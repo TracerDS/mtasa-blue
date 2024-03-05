@@ -23,6 +23,7 @@ class CPlayer;
 #include "CObject.h"
 #include "packets/CPacket.h"
 #include "packets/CPlayerStatsPacket.h"
+#include <net/CSimPlayer.h>
 class CKeyBinds;
 class CPlayerCamera;
 enum class eVehicleAimDirection : std::uint8_t;

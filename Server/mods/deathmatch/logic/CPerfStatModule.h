@@ -66,42 +66,42 @@ public:
         iNumRows = 0;
     }
 
-    const SString& ColumnName(unsigned long c) const
+    const SString& ColumnName(std::uint32_t c) const
     {
-        unsigned long idx = c;
+        std::uint32_t idx = c;
         if (idx < colNames.size())
             return colNames[idx];
         static SString dummy;
         return dummy;
     }
 
-    int ColumnCount() const { return iNumColumns; }
+    int ColumnCount() const noexcept { return iNumColumns; }
 
-    int RowCount() const { return iNumRows; }
+    int RowCount() const noexcept { return iNumRows; }
 
-    void AddColumn(const SString& strColumnName)
+    void AddColumn(const SString& strColumnName) noexcept 
     {
         colNames.push_back(strColumnName);
         iNumColumns++;
     }
 
-    SString* AddRow()
+    SString* AddRow() noexcept 
     {
         iNumRows++;
         cellList.insert(cellList.end(), ColumnCount(), SString());
         return &cellList[cellList.size() - ColumnCount()];
     }
 
-    SString& Data(unsigned long c, unsigned long r)
+    SString& Data(std::uint32_t c, std::uint32_t r) noexcept 
     {
-        unsigned long idx = c + r * ColumnCount();
+        std::uint32_t idx = c + r * ColumnCount();
         if (idx < cellList.size())
             return cellList[idx];
         static SString cellDummy;
         return cellDummy;
     }
 
-    void Clear()
+    void Clear() noexcept 
     {
         colNames.clear();
         cellList.clear();
@@ -116,12 +116,12 @@ public:
 class CPerfStatModule
 {
 public:
-    virtual ~CPerfStatModule() {}
+    virtual ~CPerfStatModule() noexcept {}
 
     virtual const SString& GetCategoryName() = 0;
     virtual void           DoPulse() = 0;
     virtual void           GetStats(CPerfStatResult* pOutResult, const std::map<SString, int>& optionMap, const SString& strFilter) = 0;
-    virtual void           Stop(){};
+    virtual void           Stop() noexcept {};
 };
 
 //
@@ -205,8 +205,8 @@ public:
     virtual void           GetStats(CPerfStatResult* pOutResult, const std::map<SString, int>& optionMap, const SString& strFilter) = 0;
 
     // CPerfStatRPCPacketUsage
-    virtual void UpdatePacketUsageIn(uchar ucRpcId, uint uiSize) = 0;
-    virtual void UpdatePacketUsageOut(uchar ucRpcId, uint uiSize) = 0;
+    virtual void UpdatePacketUsageIn(std::uint8_t ucRpcId, std::uint32_t uiSize) = 0;
+    virtual void UpdatePacketUsageOut(std::uint8_t ucRpcId, std::uint32_t uiSize) = 0;
 
     static CPerfStatRPCPacketUsage* GetSingleton();
 };
@@ -223,9 +223,9 @@ public:
     virtual void           GetStats(CPerfStatResult* pOutResult, const std::map<SString, int>& optionMap, const SString& strFilter) = 0;
 
     // CPerfStatRPCPacketUsage
-    virtual void UpdateElementDataUsageOut(const char* szName, uint uiNumPlayers, uint uiSize) = 0;
-    virtual void UpdateElementDataUsageRelayed(const char* szName, uint uiNumPlayers, uint uiSize) = 0;
-    virtual void UpdateEventUsageOut(const char* szName, uint uiNumPlayers) = 0;
+    virtual void UpdateElementDataUsageOut(const char* szName, std::uint32_t uiNumPlayers, std::uint32_t uiSize) = 0;
+    virtual void UpdateElementDataUsageRelayed(const char* szName, std::uint32_t uiNumPlayers, std::uint32_t uiSize) = 0;
+    virtual void UpdateEventUsageOut(const char* szName, std::uint32_t uiNumPlayers) = 0;
 
     static CPerfStatEventPacketUsage* GetSingleton();
 };
@@ -339,7 +339,7 @@ public:
     virtual void           GetStats(CPerfStatResult* pOutResult, const std::map<SString, int>& optionMap, const SString& strFilter) = 0;
 
     // CPerfStatFunctionTiming
-    virtual void UpdateTiming(const SString& strResourceName, const char* szFunctionName, TIMEUS timeUs, uint uiDeltaBytes) = 0;
+    virtual void UpdateTiming(const SString& strResourceName, const char* szFunctionName, TIMEUS timeUs, std::uint32_t uiDeltaBytes) = 0;
 
     static CPerfStatFunctionTiming* GetSingleton();
     static TIMEUS                   ms_PeakUsThresh;

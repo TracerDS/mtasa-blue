@@ -73,17 +73,17 @@ public:
     static void     PushUniqueId(void* pObject, EIdClassType idClass, SArrayId id);
 
     static void* FindEntry(SArrayId id, EIdClassType idClass);
-    static uint  GetCapacity();
-    static uint  GetUnusedAmount();
+    static std::uint32_t  GetCapacity();
+    static std::uint32_t  GetUnusedAmount();
 
 private:
-    static void ExpandBy(uint uiAmount);
+    static void ExpandBy(std::uint32_t uiAmount);
 
     static CStack<SArrayId, 1>   m_IDStack;
     static std::vector<SIdEntry> m_Elements;
-    static uint                  m_uiCapacity;
+    static std::uint32_t         m_uiCapacity;
     static bool                  m_bInitialized;
-    static uint                  m_uiPopIdCounter;
-    static uint                  m_uiMinTicksBetweenIdReuse;
+    static std::uint32_t         m_uiPopIdCounter;
+    static std::uint32_t         m_uiMinTicksBetweenIdReuse;
     static CTickCount            m_LastPeriodStart;
 };

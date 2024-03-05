@@ -14,10 +14,10 @@
 #endif
 
 // If compiled script, make sure correct chunkname is embedded
-void CLuaShared::EmbedChunkName(SString strChunkName, const char** pcpOutBuffer, uint* puiOutSize)
+void CLuaShared::EmbedChunkName(SString strChunkName, const char** pcpOutBuffer, std::uint32_t* puiOutSize)
 {
     const char*& cpBuffer = *pcpOutBuffer;
-    uint&        uiSize = *puiOutSize;
+    std::uint32_t&        uiSize = *puiOutSize;
 
     if (!IsLuaCompiledScript(cpBuffer, uiSize))
         return;
@@ -26,7 +26,7 @@ void CLuaShared::EmbedChunkName(SString strChunkName, const char** pcpOutBuffer,
         return;
 
     // Get size of name in original
-    uint uiStringSizeOrig = *(uint*)(cpBuffer + 12);
+    std::uint32_t uiStringSizeOrig = *(std::uint32_t*)(cpBuffer + 12);
     if (uiSize < 12 + 4 + uiStringSizeOrig)
         return;
 
@@ -53,10 +53,10 @@ void CLuaShared::EmbedChunkName(SString strChunkName, const char** pcpOutBuffer,
     uiSize = store.GetSize();
 }
 
-bool CLuaShared::CheckUTF8BOMAndUpdate(const char** pcpOutBuffer, uint* puiOutSize)
+bool CLuaShared::CheckUTF8BOMAndUpdate(const char** pcpOutBuffer, std::uint32_t* puiOutSize)
 {
-    const char*& cpBuffer = *pcpOutBuffer;
-    uint&        uiSize = *puiOutSize;
+    const char*&   cpBuffer = *pcpOutBuffer;
+    std::uint32_t& uiSize = *puiOutSize;
 
     // UTF-8 BOM?  Compare by checking the standard UTF-8 BOM
     if (IsUTF8BOM(cpBuffer, uiSize))
@@ -68,7 +68,7 @@ bool CLuaShared::CheckUTF8BOMAndUpdate(const char** pcpOutBuffer, uint* puiOutSi
     }
 
     // Maybe not UTF-8, if we have a >80% heuristic detection confidence, assume it is
-    return GetUTF8Confidence((const unsigned char*)cpBuffer, uiSize) >= 80;
+    return GetUTF8Confidence((const std::uint8_t*)cpBuffer, uiSize) >= 80;
 }
 
 void CLuaShared::LoadFunctions()

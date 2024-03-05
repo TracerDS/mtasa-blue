@@ -15,7 +15,7 @@ class CLuaTrainTrackDefs : public CLuaDefs
 {
 public:
 #ifdef MTA_CLIENT
-    using TrainTrack = uchar;
+    using TrainTrack = std::uint8_t;
 #else
     using TrainTrack = CTrainTrack*;
 #endif
@@ -23,5 +23,5 @@ public:
     static void LoadFunctions();
     static void AddClass(lua_State* luaVM);
 
-    static TrainTrack GetDefaultTrack(uchar trackID);
+    static TrainTrack GetDefaultTrack(std::uint8_t trackID);
 };

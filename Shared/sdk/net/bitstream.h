@@ -18,12 +18,12 @@
 #include "SharedUtil.Misc.h"
 #include "SharedUtil.Logging.h"
 #include <vector>
-#ifndef WIN32
+#ifndef _WIN32
     #include <alloca.h>
 #endif
 
 #ifdef __cpp_lib_string_view
-#include <string_view>
+    #include <string_view>
 #endif
 
 struct ISyncStructure;
@@ -52,11 +52,10 @@ public:
     virtual void Write(const char* input, int numberOfBytes) = 0;
     virtual void Write(const ISyncStructure* syncStruct) = 0;
 
-public:            // Use char functions only when they will be 0 most times
+    // Use char functions only when they will be 0 most times
     virtual void WriteCompressed(const std::uint8_t& input) = 0;
     virtual void WriteCompressed(const char& input) = 0;
 
-public:
     virtual void WriteCompressed(const std::uint16_t& input) = 0;
     virtual void WriteCompressed(const short& input) = 0;
     virtual void WriteCompressed(const std::uint32_t& input) = 0;
@@ -84,9 +83,9 @@ public:
     virtual void WriteOrthMatrix(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) = 0;
 
     virtual bool Read(std::uint8_t& output) = 0;
-    virtual bool Read(char& output) = 0;
+    virtual bool Read(std::int8_t& output) = 0;
     virtual bool Read(std::uint16_t& output) = 0;
-    virtual bool Read(short& output) = 0;
+    virtual bool Read(std::int16_t& output) = 0;
     virtual bool Read(std::uint32_t& output) = 0;
     virtual bool Read(int& output) = 0;
     virtual bool Read(float& output) = 0;
@@ -94,17 +93,17 @@ public:
     virtual bool Read(char* output, int numberOfBytes) = 0;
     virtual bool Read(ISyncStructure* syncStruct) = 0;
 
-public:            // Use char functions only when they will be 0 most times
+    // Use char functions only when they will be 0 most times
     virtual bool ReadCompressed(std::uint8_t& output) = 0;
     virtual bool ReadCompressed(char& output) = 0;
 
-public:
     virtual bool ReadCompressed(std::uint16_t& output) = 0;
     virtual bool ReadCompressed(short& output) = 0;
     virtual bool ReadCompressed(std::uint32_t& output) = 0;
     virtual bool ReadCompressed(int& output) = 0;
 
-private:            // Float functions not used because they only cover -1 to +1 and are lossy
+private:
+    // Float functions not used because they only cover -1 to +1 and are lossy
     virtual bool ReadCompressed(float& output) = 0;
     virtual bool ReadCompressed(double& output) = 0;
 

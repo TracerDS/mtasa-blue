@@ -49,14 +49,14 @@ public:
     void ReadScriptID(std::uint32_t uiScriptID);
     void ReadTable(class CLuaArguments* table);
 
-    int GetType() const { return m_iType; };
+    int GetType() const noexcept { return m_iType; };
 
-    bool               GetBoolean() const { return m_bBoolean; };
-    lua_Number         GetNumber() const { return m_Number; };
-    const std::string& GetString() { return m_strString; };
-    void*              GetUserData() const { return m_pUserData; };
-    CElement*          GetElement() const;
-    bool               GetAsString(SString& strBuffer);
+    bool               GetBoolean() const noexcept { return m_bBoolean; };
+    lua_Number         GetNumber() const noexcept { return m_Number; };
+    const std::string& GetString() const noexcept { return m_strString; };
+    void*              GetUserData() const noexcept { return m_pUserData; };
+    CElement*          GetElement() const noexcept;
+    bool               GetAsString(SString& strBuffer) const noexcept;
 
     bool         ReadFromBitStream(NetBitStreamInterface& bitStream, std::vector<CLuaArguments*>* pKnownTables = nullptr);
     bool         WriteToBitStream(NetBitStreamInterface& bitStream, CFastHashMap<CLuaArguments*, std::uint32_t>* pKnownTables = nullptr) const;

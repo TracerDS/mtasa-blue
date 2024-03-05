@@ -22,26 +22,26 @@ class CLuaTimer;
 class CLuaTimer
 {
 public:
-    CLuaTimer(const CLuaFunctionRef& iLuaFunction, const CLuaArguments& Arguments);
-    ~CLuaTimer();
+    CLuaTimer(const CLuaFunctionRef& iLuaFunction, const CLuaArguments& Arguments) noexcept;
+    ~CLuaTimer() noexcept;
 
     void RemoveScriptID();
 
-    CTickCount GetStartTime() const { return m_llStartTime; };
-    void       SetStartTime(CTickCount llStartTime) { m_llStartTime = llStartTime; };
+    CTickCount GetStartTime() const noexcept { return m_llStartTime; };
+    void       SetStartTime(CTickCount llStartTime) noexcept { m_llStartTime = llStartTime; };
 
-    CTickCount GetDelay() const { return m_llDelay; };
-    void       SetDelay(CTickCount llDelay) { m_llDelay = llDelay; };
+    CTickCount GetDelay() const noexcept { return m_llDelay; };
+    void       SetDelay(CTickCount llDelay) noexcept { m_llDelay = llDelay; };
 
-    unsigned int GetRepeats() const { return m_uiRepeats; };
-    void         SetRepeats(unsigned int uiRepeats) { m_uiRepeats = uiRepeats; }
+    std::uint32_t GetRepeats() const noexcept { return m_uiRepeats; };
+    void          SetRepeats(std::uint32_t uiRepeats) noexcept { m_uiRepeats = uiRepeats; }
 
     void ExecuteTimer(class CLuaMain* pLuaMain);
 
     CTickCount GetTimeLeft();
 
-    uint                 GetScriptID() const { return m_uiScriptID; }
-    const SLuaDebugInfo& GetLuaDebugInfo() { return m_LuaDebugInfo; }
+    std::uint32_t        GetScriptID() const noexcept { return m_uiScriptID; }
+    const SLuaDebugInfo& GetLuaDebugInfo() const noexcept { return m_LuaDebugInfo; }
     void                 SetLuaDebugInfo(const SLuaDebugInfo& luaDebugInfo) { m_LuaDebugInfo = luaDebugInfo; }
 
 private:
@@ -49,7 +49,7 @@ private:
     CLuaArguments   m_Arguments;
     CTickCount      m_llStartTime;
     CTickCount      m_llDelay;
-    unsigned int    m_uiRepeats;
-    uint            m_uiScriptID;
+    std::uint32_t   m_uiRepeats;
+    std::uint32_t   m_uiScriptID;
     SLuaDebugInfo   m_LuaDebugInfo;
 };

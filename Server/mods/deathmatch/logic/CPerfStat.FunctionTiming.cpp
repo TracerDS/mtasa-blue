@@ -25,15 +25,15 @@ namespace
     {
         STiming() : uiNumCalls(0), fTotalMs(0), fPeakMs(0), fResBiggestMs(0), uiTotalBytes(0), uiPeakBytes(0), uiResBiggestBytes(0) {}
 
-        uint    uiNumCalls;
+        std::uint32_t    uiNumCalls;
         float   fTotalMs;
         float   fPeakMs;
         float   fResBiggestMs;
         SString strResBiggestMsName;
 
-        uint    uiTotalBytes;
-        uint    uiPeakBytes;
-        uint    uiResBiggestBytes;
+        std::uint32_t    uiTotalBytes;
+        std::uint32_t    uiPeakBytes;
+        std::uint32_t    uiResBiggestBytes;
         SString strResBiggestBytesName;
     };
 
@@ -98,7 +98,7 @@ public:
     virtual void           GetStats(CPerfStatResult* pOutResult, const std::map<SString, int>& optionMap, const SString& strFilter);
 
     // CPerfStatFunctionTiming
-    virtual void UpdateTiming(const SString& strResourceName, const char* szFunctionName, TIMEUS timeUs, uint uiDeltaBytes);
+    virtual void UpdateTiming(const SString& strResourceName, const char* szFunctionName, TIMEUS timeUs, std::uint32_t uiDeltaBytes);
 
     // CPerfStatFunctionTimingImpl functions
     void SetActive(bool bActive);
@@ -223,7 +223,7 @@ void CPerfStatFunctionTimingImpl::DoPulse()
             item.prev60s.uiResBiggestBytes = 0;
             item.prev60s.strResBiggestBytesName.clear();
 
-            for (uint i = 0; i < NUMELMS(item.history); i++)
+            for (std::uint32_t i = 0; i < NUMELMS(item.history); i++)
             {
                 const STiming& slot = item.history[i];
                 item.prev60s.uiNumCalls += slot.uiNumCalls;
@@ -283,7 +283,7 @@ void CPerfStatFunctionTimingImpl::SetActive(bool bActive)
 //
 //
 ///////////////////////////////////////////////////////////////
-void CPerfStatFunctionTimingImpl::UpdateTiming(const SString& strResourceName, const char* szFunctionName, TIMEUS timeUs, uint uiDeltaBytes)
+void CPerfStatFunctionTimingImpl::UpdateTiming(const SString& strResourceName, const char* szFunctionName, TIMEUS timeUs, std::uint32_t uiDeltaBytes)
 {
     if (!m_bIsActive)
         return;
@@ -331,7 +331,7 @@ void CPerfStatFunctionTimingImpl::GetStats(CPerfStatResult* pResult, const std::
     // Set option flags
     //
     bool bHelp = MapContains(optionMap, "h");
-    uint uiPeakBytesThresh = 1000;
+    std::uint32_t uiPeakBytesThresh = 1000;
     int  iPeakMsThresh = optionMap.empty() ? -1 : atoi(optionMap.begin()->first);
     if (iPeakMsThresh < 0)
         iPeakMsThresh = DEFAULT_THRESH_MS;

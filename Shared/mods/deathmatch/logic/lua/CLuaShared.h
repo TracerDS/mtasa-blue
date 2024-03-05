@@ -25,8 +25,8 @@
 class CLuaShared
 {
 public:
-    static void EmbedChunkName(SString strChunkName, const char** pcpOutBuffer, uint* puiOutSize);
-    static bool CheckUTF8BOMAndUpdate(const char** pcpOutBuffer, uint* puiOutSize);
+    static void EmbedChunkName(SString strChunkName, const char** pcpOutBuffer, std::uint32_t* puiOutSize);
+    static bool CheckUTF8BOMAndUpdate(const char** pcpOutBuffer, std::uint32_t* puiOutSize);
     static void LoadFunctions();
     static void AddClasses(lua_State* luaVM);
 

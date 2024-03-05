@@ -21,7 +21,7 @@ extern "C"
 #include "../common/CBitStream.h"
 #include "json.h"
 #include "CLuaFunctionRef.h"
-#include "CLuaArguments.hpp"
+#include "CLuaArgument.h"
 
 inline void LUA_CHECKSTACK(lua_State* L, int size)
 {
@@ -94,7 +94,7 @@ public:
 
     bool IsEqualTo(const CLuaArguments& compareTo, std::set<const CLuaArguments*>* knownTables = nullptr) const noexcept ;
 
-    constexpr std::size_t Count() const noexcept { return m_Arguments.size(); }
+    std::size_t Count() const noexcept { return m_Arguments.size(); }
 
 private:
     std::vector<CLuaArgument*> m_Arguments;

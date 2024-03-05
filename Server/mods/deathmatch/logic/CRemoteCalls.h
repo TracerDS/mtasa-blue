@@ -23,7 +23,7 @@ private:
     bool                m_bIsFetch;
     class CLuaMain*     m_VM;
     CLuaFunctionRef     m_iFunction;
-    long long           m_iStartTime;
+    std::int64_t        m_iStartTime;
     SString             m_strURL;
     SString             m_strQueueName;
     CLuaArguments       m_FetchArguments;
@@ -33,12 +33,12 @@ private:
 
 public:
     CRemoteCall(const char* szServerHost, const char* szResourceName, const char* szFunctionName, CLuaArguments* arguments, CLuaMain* luaMain,
-                const CLuaFunctionRef& iFunction, const SString& strQueueName, uint uiConnectionAttempts, uint uiConnectTimeoutMs);
+                const CLuaFunctionRef& iFunction, const SString& strQueueName, std::uint32_t uiConnectionAttempts, std::uint32_t uiConnectTimeoutMs) noexcept;
     CRemoteCall(const char* szURL, CLuaArguments* arguments, CLuaMain* luaMain, const CLuaFunctionRef& iFunction, const SString& strQueueName,
-                uint uiConnectionAttempts, uint uiConnectTimeoutMs);
+                std::uint32_t uiConnectionAttempts, std::uint32_t uiConnectTimeoutMs) noexcept;
     CRemoteCall(const char* szURL, CLuaArguments* fetchArguments, CLuaMain* luaMain, const CLuaFunctionRef& iFunction, const SString& strQueueName,
-                const SHttpRequestOptions& options);
-    ~CRemoteCall();
+                const SHttpRequestOptions& options) noexcept;
+    ~CRemoteCall() noexcept;
 
     void                   MakeCall();
     static void            DownloadFinishedCallback(const SHttpDownloadResult& result);
@@ -46,14 +46,14 @@ public:
     const SDownloadStatus& GetDownloadStatus();
     void                   OnLuaMainDestroy();
 
-    CLuaMain*                  GetVM() { return m_VM; }
-    long long                  GetStartTime() { return m_iStartTime; }
-    const SString&             GetURL() { return m_strURL; }
-    const SString&             GetQueueName() { return m_strQueueName; }
-    bool                       IsFetch() { return m_bIsFetch; }
-    bool                       IsLegacy() { return m_options.bIsLegacy; }
-    const CLuaArguments&       GetFetchArguments() { return m_FetchArguments; }
-    const SHttpRequestOptions& GetOptions() { return m_options; }
+    CLuaMain*                  GetVM() const noexcept { return m_VM; }
+    std::int64_t               GetStartTime() const noexcept { return m_iStartTime; }
+    const SString&             GetURL() const noexcept { return m_strURL; }
+    const SString&             GetQueueName() const noexcept { return m_strQueueName; }
+    bool                       IsFetch() const noexcept { return m_bIsFetch; }
+    bool                       IsLegacy() const noexcept { return m_options.bIsLegacy; }
+    const CLuaArguments&       GetFetchArguments() const noexcept { return m_FetchArguments; }
+    const SHttpRequestOptions& GetOptions() const noexcept { return m_options; }
 };
 
 /*
@@ -65,16 +65,16 @@ class CRemoteCalls
 {
 private:
     std::list<CRemoteCall*> m_calls;
-    std::map<SString, uint> m_QueueIndexMap;
+    std::map<SString, std::uint32_t> m_QueueIndexMap;
 
 public:
     CRemoteCalls();
     ~CRemoteCalls();
 
     CRemoteCall* Call(const char* szServerHost, const char* szResourceName, const char* szFunctionName, CLuaArguments* arguments, CLuaMain* luaMain,
-                      const CLuaFunctionRef& iFunction, const SString& strQueueName, uint uiConnectionAttempts, uint uiConnectTimeoutMs);
+                      const CLuaFunctionRef& iFunction, const SString& strQueueName, std::uint32_t uiConnectionAttempts, std::uint32_t uiConnectTimeoutMs);
     CRemoteCall* Call(const char* szURL, CLuaArguments* arguments, CLuaMain* luaMain, const CLuaFunctionRef& iFunction, const SString& strQueueName,
-                      uint uiConnectionAttempts, uint uiConnectTimeoutMs);
+                      std::uint32_t uiConnectionAttempts, std::uint32_t uiConnectTimeoutMs);
     CRemoteCall* Call(const char* szURL, CLuaArguments* fetchArguments, CLuaMain* luaMain, const CLuaFunctionRef& iFunction, const SString& strQueueName,
                       const SHttpRequestOptions& options);
 
@@ -83,7 +83,7 @@ public:
     bool              CallExists(CRemoteCall* call);
     void              ProcessQueuedFiles();
     EDownloadModeType GetDownloadModeForQueueName(const SString& strQueueName);
-    EDownloadModeType GetDownloadModeFromQueueIndex(uint uiIndex);
+    EDownloadModeType GetDownloadModeFromQueueIndex(std::uint32_t uiIndex);
 
-    std::list<CRemoteCall*> GetCalls() { return m_calls; }
+    std::list<CRemoteCall*> GetCalls() const noexcept { return m_calls; }
 };
